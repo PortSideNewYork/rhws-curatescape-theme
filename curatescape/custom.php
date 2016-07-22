@@ -446,11 +446,17 @@ function mh_display_map($type=null,$item=null,$tour=null){
 			    retina: (L.Browser.retina) ? '@2x' : '',
 			});
 
+			var openstreet = L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}{retina}.png', {
+			    attribution: '<a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+			    retina: (L.Browser.retina) ? '@2x' : '',
+			});
+
+
 			var mapBounds; // keep track of changing bounds
 
 			// Build the base map
 			var map = L.map('map_canvas',{
-				layers: carto,
+				layers: openstreet,
 				minZoom: 3,
 				scrollWheelZoom: false,
 			}).setView(center, zoom);
@@ -458,11 +464,24 @@ function mh_display_map($type=null,$item=null,$tour=null){
 			// Layer controls
 			L.control.layers({
 				"Terrain":terrain,
-				"Street":carto,
+				"Street":openstreet,
 			}).addTo(map);
 			
 			//carto.addTo(map);
 			
+
+			//Add custom map layer
+			// http://69.169.84.210:8080/geoserver/wms
+			// rhws:noaa_rnc_12334
+
+           var noaaMap = L.tileLayer.wms("http://69.169.84.210:8080/geoserver/wms", {
+    		layers: 'rhws:noaa_rnc_12334',
+        	format: 'image/png',
+            transparent: true,
+            zIndex: 3
+                });
+
+            noaaMap.addTo(map);
 			
 			// Center marker and popup on open
 			map.on('popupopen', function(e) {
@@ -489,7 +508,8 @@ function mh_display_map($type=null,$item=null,$tour=null){
 					if(useClusters==true){
 						var markers = L.markerClusterGroup({
 							zoomToBoundsOnClick:true,
-							disableClusteringAtZoom: clusterIntensity,
+							//disableClusteringAtZoom: clusterIntensity,
+							spiderfyOnMaxZoom:true,
 							polygonOptions: {
 								'stroke': false,
 								'color': '#000',
@@ -504,12 +524,12 @@ function mh_display_map($type=null,$item=null,$tour=null){
 						var c = (item.featured==1 && featured_color) ? featured_color : color;
 						var inner = (item.featured==1 && featuredStar) ? "star" : "circle";
 				        if(typeof(item.thumbnail)!="undefined"){
-					        var image = '<a href="/items/show/'+item.id+'" class="curatescape-infowindow-image '+(!item.thumbnail ? 'no-img' : '')+'" style="background-image:url('+item.thumbnail+');"></a>';
+					        var image = '<a href="<?php echo WEB_ROOT;?>/items/show/'+item.id+'" class="curatescape-infowindow-image '+(!item.thumbnail ? 'no-img' : '')+'" style="background-image:url('+item.thumbnail+');"></a>';
 					    }else{
 						    var image = '';
 					    }
 					    var number = (type=='tour') ? '<span class="number">'+(i+1)+'</span>' : '';
-				        var html = image+number+'<a class="curatescape-infowindow-title" href="/items/show/'+item.id+'">'+item.title+'</a><br>'+'<div class="curatescape-infowindow-address">'+address.replace(/(<([^>]+)>)/ig,"")+'</div>';
+				        var html = image+number+'<a class="curatescape-infowindow-title" href="<?php echo WEB_ROOT;?>/items/show/'+item.id+'">'+item.title+'</a><br>'+'<div class="curatescape-infowindow-address">'+address.replace(/(<([^>]+)>)/ig,"")+'</div>';
 						
 						
 						var marker = L.marker([item.latitude,item.longitude],{icon: icon(c,inner)}).bindPopup(html);
@@ -817,15 +837,39 @@ function replace_br($data) {
 }
 
 /*
-** primary item text  
+** primary item text:
+* original logic:
+* if Story exists, use that
+* else if Description exists, use that
+*   
+* new logic:
+* if Story exists, show that
+* then if Description exists, show that
+* then if Text exists, show that (text would be a transcription of an article, ad, oral history, etc.)
 */
 
 function mh_the_text($item='item',$options=array()){
 	
-	$dc_desc = metadata($item, array('Dublin Core', 'Description'),$options);
-	$primary_text = element_exists('Item Type Metadata','Story') ? metadata($item,array('Item Type Metadata', 'Story'),$options) : null;
+// 	$dc_desc = metadata($item, array('Dublin Core', 'Description'),$options);
+// 	$primary_text = element_exists('Item Type Metadata','Story') ? metadata($item,array('Item Type Metadata', 'Story'),$options) : null;
 	
-	return $primary_text ? replace_br($primary_text) : ($dc_desc ? replace_br($dc_desc) : null);
+// 	return $primary_text ? replace_br($primary_text) : ($dc_desc ? replace_br($dc_desc) : null);
+
+	$primary_text = element_exists('Item Type Metadata','Story') ? replace_br(metadata($item,array('Item Type Metadata', 'Story'),$options)) : null;
+	
+	$dc_desc = metadata($item, array('Dublin Core', 'Description'),$options);
+	if ($dc_desc) {
+		$primary_text = $primary_text ? $primary_text . replace_br($dc_desc) : replace_br($dc_desc);
+	}
+
+	//Text is part of "Text" Element type
+	$dc_text = metadata($item, array('Item Type Metadata', 'Text'),$options);
+	if ($dc_text) {
+		$primary_text = $primary_text ? $primary_text . replace_br($dc_text) : replace_br($dc_text);
+	}
+
+	return $primary_text;
+	
 }
 
 
@@ -1058,6 +1102,7 @@ function mh_footer_scripts_init(){
 			
 			
 			loadCSS('<?php echo WEB_ROOT;?>/themes/curatescape/javascripts/fancybox/source/jquery.fancybox.css');
+			loadCSS('<?php echo WEB_ROOT;?>/themes/curatescape/javascripts/fancybox/source/helpers/jquery.fancybox-buttons.css');
 			loadJS('<?php echo WEB_ROOT;?>/themes/curatescape/javascripts/fancybox/source/jquery.fancybox.pack.js', function(){
 				// checkWidth.js sets 'big' and 'small' body classes
 				// FancyBox is used only when the body class is 'big'
@@ -1079,9 +1124,11 @@ function mh_footer_scripts_init(){
 				         overlay : {
 				         	locked : true
 				        },
+		                buttons	: {}
 				    }
 				});				
 			});
+			loadJS('<?php echo WEB_ROOT;?>/themes/curatescape/javascripts/fancybox/source/helpers/jquery.fancybox-buttons.js');
 			
 
 
@@ -1418,6 +1465,91 @@ function embeddableVersion($file,$title=null,$desc=null,$field=array('Dublin Cor
 	}
 }
 
+/**
+ * Sources list
+ */
+function mh_sources() {
+	$sources = metadata('item',array('Dublin Core', 'Source'), 'all');
+	if (count($sources) > 0){
+		echo '<h3>'.__('Sources:').'</h3>';
+		echo '<ul>';
+		
+		foreach ($sources as $source) {
+			echo "<li>$source</li>";
+		}
+		
+		echo '</ul>';
+	}
+}
+
+/**
+ * Rights list
+ */
+function mh_rights() {
+	$rights = metadata('item',array('Dublin Core', 'Rights'), 'all');
+	if (count($rights) > 0){
+		echo '<h3>'.__('Rights:').'</h3>';
+		echo '<ul>';
+
+		foreach ($rights as $right) {
+			echo "<li>$right</li>";
+		}
+
+		echo '</ul>';
+	}
+}
+
+
+/**
+ * Dates list
+ * 	 Use DateTime::createFromFormat('Y-m-d\TH:i:sP', $date)
+ */
+function mh_dates() {
+	$dates = metadata('item',array('Dublin Core', 'Date'), 'all');
+	if (count($dates) > 0){
+		if (count($dates) == 1) {
+			echo '<h3>'.__('Date').':</h3>';
+		}
+		else {
+			echo '<h3>'.__('Dates').':</h3>';
+		}
+		//echo '<ul>';
+
+		$datecount = 0; //use to see if need delimiter between dates
+		foreach ($dates as $date) {
+			$datecount++;
+			
+			$dateoutput = $date;
+			
+			if (preg_match('/^[0-9]{4}-[0-9]{1,2}-[0-9]{1,2}/', $date)) {
+				$datestamp = DateTime::createFromFormat('Y-m-d', $date);
+				$dateoutput = date_format($datestamp, 'M. j, Y');
+			}
+			elseif (preg_match('/^[0-9]{4}-[0-9]{1,2}/', $date)) {
+				$datestamp = DateTime::createFromFormat('Y-m', $date);
+				$dateoutput = date_format($datestamp, 'M. Y');
+			}
+			elseif (preg_match('/^[0-9]{4}/', $date)) {
+				$dateoutput = $date;
+				//$datestamp = DateTime::createFromFormat('Y', $date);
+				//$dateoutput = DateTime::format($datestamp, 'Y');
+				
+			}
+			
+				
+			//echo "<li>$dateoutput</li>";
+			if ($datecount == 1) {
+				echo " $dateoutput";
+			}
+			else {
+				echo ", $dateoutput";
+			}
+		}
+
+		//echo '</ul>';
+		echo '</h3>';
+	}
+}
 
 /*
 ** Display subjects as links
@@ -1435,6 +1567,9 @@ function mh_subjects(){
 			$link .= rawurlencode($subject);
 			$link .= htmlentities('&search=&advanced[0][element_id]=49&advanced[0][type]=contains&advanced[0][terms]=');
 			$link .= urlencode(str_replace('&amp;','&',$subject));
+
+			$subject = str_replace("--", "&#8212;", $subject);
+				
 			echo '<li><a href="'.$link.'">'.$subject.'</a></li> ';
 		}
 		echo '</ul>';
@@ -2025,8 +2160,9 @@ function mh_custom_css(){
 		'.$bg.'
 		background-position: left bottom;
 		background-repeat: no-repeat;
-		background-size:cover;
-		}
+		/*background-size:cover;*/
+		background-size:contain;
+    }
 	.look-at-me{
 		border-color:'.$color_secondary.';
 	}
@@ -2376,10 +2512,10 @@ function mh_normalize_special_characters( $str )
 {
 	# Quotes cleanup
 	$str = str_replace( chr(ord("`")), "'", $str );        # `
-	$str = str_replace( chr(ord("´")), "'", $str );        # ´
+	$str = str_replace( chr(ord("Â´")), "'", $str );        # Â´
 	$str = str_replace( chr(ord("`")), "'", $str );        # `
-	$str = str_replace( chr(ord("´")), "'", $str );        # ´
-	$str = str_replace( chr(ord("´")), "'", $str );        # ´
+	$str = str_replace( chr(ord("Â´")), "'", $str );        # Â´
+	$str = str_replace( chr(ord("Â´")), "'", $str );        # Â´
 
 	# Bullets, dashes, and trademarks
 	$str = str_replace( chr(149), "&#8226;", $str );    # bullet ?
@@ -2391,13 +2527,13 @@ function mh_normalize_special_characters( $str )
 	$str = str_replace( "&quot;", "\"", $str );        # "
 	$str = str_replace( "&apos;", "\'", $str );        # '
 	$str = str_replace( "&#039;", "'", $str );        # '
-	$str = str_replace( "£", "&#163;", $str );        # pounds £ '
+	$str = str_replace( "Â£", "&#163;", $str );        # pounds Â£ '
 
-	$unwanted_array = array(    '?'=>'S', '?'=>'s', '?'=>'Z', '?'=>'z', 'À'=>'A', 'Á'=>'A', 'Â'=>'A', 'Ã'=>'A', 'Ä'=>'A', 'Å'=>'A', 'Æ'=>'A', 'Ç'=>'C', 'È'=>'E', 'É'=>'E',
-		'Ê'=>'E', 'Ë'=>'E', 'Ì'=>'I', 'Í'=>'I', 'Î'=>'I', 'Ï'=>'I', 'Ñ'=>'N', 'Ò'=>'O', 'Ó'=>'O', 'Ô'=>'O', 'Õ'=>'O', 'Ö'=>'O', 'Ø'=>'O', 'Ù'=>'U',
-		'Ú'=>'U', 'Û'=>'U', 'Ü'=>'U', 'Ý'=>'Y', 'Þ'=>'B', 'ß'=>'Ss', 'à'=>'a', 'á'=>'a', 'â'=>'a', 'ã'=>'a', 'ä'=>'a', 'å'=>'a', 'æ'=>'a', 'ç'=>'c',
-		'è'=>'e', 'é'=>'e', 'ê'=>'e', 'ë'=>'e', 'ì'=>'i', 'í'=>'i', 'î'=>'i', 'ï'=>'i', 'ð'=>'o', 'ñ'=>'n', 'ò'=>'o', 'ó'=>'o', 'ô'=>'o', 'õ'=>'o',
-		'ö'=>'o', 'ø'=>'o', 'ù'=>'u', 'ú'=>'u', 'û'=>'u', 'ý'=>'y', 'ý'=>'y', 'þ'=>'b', 'ÿ'=>'y');
+	$unwanted_array = array(    '?'=>'S', '?'=>'s', '?'=>'Z', '?'=>'z', 'Ã€'=>'A', 'Ã�'=>'A', 'Ã‚'=>'A', 'Ãƒ'=>'A', 'Ã„'=>'A', 'Ã…'=>'A', 'Ã†'=>'A', 'Ã‡'=>'C', 'Ãˆ'=>'E', 'Ã‰'=>'E',
+		'ÃŠ'=>'E', 'Ã‹'=>'E', 'ÃŒ'=>'I', 'Ã�'=>'I', 'ÃŽ'=>'I', 'Ã�'=>'I', 'Ã‘'=>'N', 'Ã’'=>'O', 'Ã“'=>'O', 'Ã”'=>'O', 'Ã•'=>'O', 'Ã–'=>'O', 'Ã˜'=>'O', 'Ã™'=>'U',
+		'Ãš'=>'U', 'Ã›'=>'U', 'Ãœ'=>'U', 'Ã�'=>'Y', 'Ãž'=>'B', 'ÃŸ'=>'Ss', 'Ã '=>'a', 'Ã¡'=>'a', 'Ã¢'=>'a', 'Ã£'=>'a', 'Ã¤'=>'a', 'Ã¥'=>'a', 'Ã¦'=>'a', 'Ã§'=>'c',
+		'Ã¨'=>'e', 'Ã©'=>'e', 'Ãª'=>'e', 'Ã«'=>'e', 'Ã¬'=>'i', 'Ã­'=>'i', 'Ã®'=>'i', 'Ã¯'=>'i', 'Ã°'=>'o', 'Ã±'=>'n', 'Ã²'=>'o', 'Ã³'=>'o', 'Ã´'=>'o', 'Ãµ'=>'o',
+		'Ã¶'=>'o', 'Ã¸'=>'o', 'Ã¹'=>'u', 'Ãº'=>'u', 'Ã»'=>'u', 'Ã½'=>'y', 'Ã½'=>'y', 'Ã¾'=>'b', 'Ã¿'=>'y');
 
 	$str = strtr( $str, $unwanted_array );
 

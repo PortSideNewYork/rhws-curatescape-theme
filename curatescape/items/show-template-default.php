@@ -67,6 +67,10 @@ echo head(array('item'=>$item, 'maptype'=>'story', 'bodyid'=>'items', 'bodyclass
 				<?php echo mh_the_access_information(); ?>
 				</div>	
 
+				<div id="dates">
+				<?php echo mh_dates();?>	
+				</div>
+
 				<div id="street-address">
 				<?php echo mh_street_address();?>	
 				</div>
@@ -75,12 +79,22 @@ echo head(array('item'=>$item, 'maptype'=>'story', 'bodyid'=>'items', 'bodyclass
 				<?php echo mh_official_website();?>	
 				</div>
 
+				<!-- 
 				<div id="cite-this">
 				<?php echo mh_item_citation(); ?>
-				</div>	
+				</div> 
+				-->	
 				
 				<?php echo function_exists('tours_for_item') ? tours_for_item($item->id) : null; ?>
 					
+				<div id="sources">  	
+				<?php mh_sources(); ?>
+				</div>	
+
+				<div id="rights">  	
+				<?php mh_rights(); ?>
+				</div>	
+
 				<div id="subjects">  	
 				<?php mh_subjects(); ?>
 				</div>	
