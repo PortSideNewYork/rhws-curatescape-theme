@@ -358,7 +358,6 @@ function mh_display_map($type=null,$item=null,$tour=null){
 	$color=get_theme_option('marker_color') ? get_theme_option('marker_color') : '#333';
 	$featured_color=get_theme_option('featured_marker_color') ? get_theme_option('featured_marker_color') : $color;
 
-
 	switch($type){
 
 	case 'focusarea':
@@ -400,6 +399,8 @@ function mh_display_map($type=null,$item=null,$tour=null){
 ?>
 		<script type="text/javascript">
 
+
+		
 		var type =  '<?php echo $type ;?>';
 		var color = '<?php echo $color ;?>';
 		var featured_color = '<?php echo $featured_color ;?>';
@@ -446,9 +447,8 @@ function mh_display_map($type=null,$item=null,$tour=null){
 			    retina: (L.Browser.retina) ? '@2x' : '',
 			});
 
-			var openstreet = L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}{retina}.png', {
-			    attribution: '<a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-			    retina: (L.Browser.retina) ? '@2x' : '',
+			var openstreet = L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+			    attribution: '<a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, , <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>'
 			});
 
 
@@ -462,11 +462,13 @@ function mh_display_map($type=null,$item=null,$tour=null){
 			}).setView(center, zoom);
 			
 			// Layer controls
+			// Add later
+			/*
 			L.control.layers({
 				"Terrain":terrain,
 				"Street":openstreet,
 			}).addTo(map);
-			
+			*/
 			//carto.addTo(map);
 			
 
@@ -492,6 +494,8 @@ function mh_display_map($type=null,$item=null,$tour=null){
 			    // pan to new center
 			    map.panTo(map.unproject(px),{animate: true}); 
 			});				
+
+
 			// Add Markers
 			var addMarkers = function(data){				
 		        function icon(color,markerInner){ 
@@ -516,32 +520,101 @@ function mh_display_map($type=null,$item=null,$tour=null){
 								'fillOpacity': .1
 							}
 						});
+
+						markers.addTo(map);
+
 					}
 					
+					
+                    //also a contol to toggle on/off overlays
+
+                    var mapControl = L.control.layers(
+                    		{
+                				"Terrain":terrain,
+                				"Street":openstreet,
+                			}, 
+							null, 
+							{ collapsed: true }
+					);
+						
+					//create array of L.featureGroup.subGroup so we can turn markers on/off based on Collection
+					//each array index is an object with collname= and what will be a featureGroup.subGroup
+					var mapSubGroups = {};
+
+					//Add a default 'none' group and add to controls
+					mapSubGroups['none'] = L.featureGroup.subGroup(markers);
+					mapControl.addOverlay(mapSubGroups['none'], "History");
+					
+					
+                    for (cind = 0; cind < collectioninfo.length; cind++) {
+						var collinfo = collectioninfo[cind];
+
+						mapSubGroups[collinfo.collname] = L.featureGroup.subGroup(markers);
+
+						if (collinfo.collname != "none") {
+							mapControl.addOverlay(mapSubGroups[collinfo.collname], collinfo.collname);
+						}
+                    }
+
+                    
+                    
+                    //Now add each item into correct group
 			        jQuery.each(data.items,function(i,item){
-							
+
+						//Get Collection name of Item, from multidimensional array popluated on server
+			        	var collection_name = "none";
+                        for (cind = 0; cind < collectioninfo.length; cind++) {
+							var collinfo = collectioninfo[cind];
+							if (collinfo.collitems.indexOf(item.id) != -1) {
+								collection_name = collinfo.collname;
+								break;
+							}
+                        }
+			        	
 				        var address = item.address ? item.address : '';
 						var c = (item.featured==1 && featured_color) ? featured_color : color;
 						var inner = (item.featured==1 && featuredStar) ? "star" : "circle";
+
+						if (collection_name == "Red Hook Retail Businesses") {
+                            // see https://www.mapbox.com/maki-icons/ for choices
+							inner = "commercial";
+							c = "#008B8B";
+						}
+						
 				        if(typeof(item.thumbnail)!="undefined"){
 					        var image = '<a href="<?php echo WEB_ROOT;?>/items/show/'+item.id+'" class="curatescape-infowindow-image '+(!item.thumbnail ? 'no-img' : '')+'" style="background-image:url('+item.thumbnail+');"></a>';
 					    }else{
 						    var image = '';
 					    }
 					    var number = (type=='tour') ? '<span class="number">'+(i+1)+'</span>' : '';
-				        var html = image+number+'<a class="curatescape-infowindow-title" href="<?php echo WEB_ROOT;?>/items/show/'+item.id+'">'+item.title+'</a><br>'+'<div class="curatescape-infowindow-address">'+address.replace(/(<([^>]+)>)/ig,"")+'</div>';
+
+
+					    var html = image+number+'<a class="curatescape-infowindow-title" href="<?php echo WEB_ROOT;?>/items/show/'+item.id+'">'+item.title
+					    +'</a><br>'+'<div class="curatescape-infowindow-address">'+address.replace(/(<([^>]+)>)/ig,"")+'</div>';
 						
 						
 						var marker = L.marker([item.latitude,item.longitude],{icon: icon(c,inner)}).bindPopup(html);
 						
-						group.push(marker);  
+						group.push(marker);  //Not used in clustering on?
 						
-						if(useClusters==true) markers.addLayer(marker);
+						//if(useClusters==true) markers.addLayer(marker);
+						if(useClusters==true) {
+							//markers.addLayer(marker);
+
+							marker.addTo(mapSubGroups[collection_name]);
+						}
 
 			        });
 			        
 			        if(useClusters==true && type!=='tour' || type=='tour' && clusterTours==true){
-				        map.addLayer(markers);
+				        //original:
+				        //map.addLayer(markers);
+				        mapControl.addTo(map);
+				        
+				        //1. add groups to map, 2. add control to overlays
+				        //Just add items with no collection to map by default
+				        mapSubGroups['none'].addTo(map);
+
 				        mapBounds = markers.getBounds();
 				    }else{
 			        	group=new L.featureGroup(group); 
@@ -665,7 +738,7 @@ function mh_display_map($type=null,$item=null,$tour=null){
 
 		});
         </script>
-        
+
 		<!-- Map Container -->
 		<div id="hm-map">
 			<div id="map_canvas"></div>
@@ -1090,7 +1163,6 @@ function mh_footer_scripts_init(){
 			function toggleText(){
 				var link = jQuery('a.fancybox-hide-text');
 				jQuery(".fancybox-title span.main").slideToggle(function(){
-		            		            		            
 		            if (jQuery(this).is(":visible")) {
 		                 link.html('<span class="icon-close" aria-hidden="true"></span> Hide Caption').addClass('active');
 		            } else {
@@ -1114,7 +1186,11 @@ function mh_footer_scripts_init(){
 			            if (this.title) {
 			                // Add caption close button
 			                this.title += '<a class="fancybox-hide-text " onclick="toggleText()"><span class="icon-chevron-up" aria-hidden="true"></span> Show Caption</a> ';
-			            }
+			                //this.title += '<a class="fancybox-hide-text " onclick="toggleText()"><span class="icon-close" aria-hidden="true"></span> Hide Caption</a> ';
+
+			                 //link.html('<span class="icon-close" aria-hidden="true"></span> Hide Caption').addClass('active');
+
+				            }
 			        },
 			        padding:3,
 				    helpers : {
@@ -1636,12 +1712,13 @@ function mh_official_website($item='item'){
 */
 function mh_street_address($item='item',$formatted=true){
 
-	if (element_exists('Item Type Metadata','Street Address')){
+	if (element_exists('Item Type Metadata','Street Address')) {
 		$address=metadata($item,array('Item Type Metadata','Street Address'));
 		$map_link='<a target="_blank" href="https://maps.google.com/maps?saddr=current+location&daddr='.urlencode($address).'">map</a>';
 		return $address ? ( $formatted ? '<h3>'.__('Street Address: ').'</h3>'.$address.' ['.$map_link.']' : $address ) : null;	
 	} 
 
+	
 }
 
 /*
@@ -2540,6 +2617,93 @@ function mh_normalize_special_characters( $str )
 	#For reasons yet unknown, only some servers may require an additional $unwanted_array item: 'height'=>'h&#101;ight'
 
 	return $str;
+}
+
+/**
+ * Create a multidimensional javascript array of each Collection with
+ * a list of the Items it contains.
+ * Also add an array entry for items with no Collection, named "NOCOLLECTION"
+ */
+function ws_get_collections_index() {
+	$collinfo = array ();
+	
+	// Get all Collections
+	$colls = get_records ( 'Collection' );
+	
+	foreach ( $colls as $coll ) {
+		
+		/*
+		 * echo "<p>" . metadata($coll, array('Dublin Core', 'Title')) .
+		 * ", id=" . metadata($coll, 'id') . "</p>";
+		 */
+		
+		// Get all items in the Collection
+		$collitemslist = get_db ()->getTable ( 'Item' )->findBy ( array (
+				'collection' => metadata ( $coll, 'id' ) 
+		), 10000 );
+		
+		/* echo "<ul>"; */
+		
+		$collitems = array ();
+		
+		foreach ( $collitemslist as $citem ) {
+			/*
+			 * echo "<li>" . metadata($citem, array('Dublin Core', 'Title'))
+			 * . ", id=" . metadata($citem, 'id')
+			 * . "</li>";
+			 */
+			/* echo "<li>" . metadata($citem, 'id') . "</li>"; */
+			// Just add the ID of the item to the list
+			array_push ( $collitems, metadata ( $citem, 'id' ) );
+		} //end loop through Items
+		
+		/* echo "</ul>"; */
+		
+		$collinfoitem = array (
+				"collname" => metadata ( $coll, array (
+						'Dublin Core',
+						'Title' 
+				) ),
+				"collid" => metadata ( $coll, 'id' ),
+				"collitems" => $collitems 
+		);
+		
+		array_push ( $collinfo, $collinfoitem );
+
+	} //end loop through Collections
+
+	/*
+	//Now find items that are not in a collection
+	
+	$collitems = array ();
+	
+	// Get all items
+	$collitemslist = get_db()->getTable( 'Item' )->findBy( array (
+			'collection' => NULL
+	), 10000 );
+	
+	
+	foreach ( $collitemslist as $citem ) {
+		// Just add the ID of the item to the list
+		array_push ( $collitems, metadata ( $citem, 'id' ) );
+	} //end loop through Items
+	
+
+	$collinfoitem = array (
+			"collname" => "NOCOLLECTION",
+			"collid" => -1,
+			"collitems" => $collitems
+	);
+	
+	array_push ( $collinfo, $collinfoitem );
+	*/
+	
+	echo "<script type=\"text/javascript\">\n";
+
+	echo "var collectioninfo = " . json_encode($collinfo) . ";\n";
+
+	echo "</script>\n";
+	
 }
 
 ?>

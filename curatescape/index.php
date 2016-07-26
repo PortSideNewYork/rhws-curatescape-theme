@@ -16,6 +16,9 @@ if(get_theme_option('expand_map')==1){
 echo head(array('maptype'=>'focusarea','bodyid'=>'home','bodyclass'=>$classname)); 
 ?>
 
+<?php ws_get_collections_index(); ?>
+
+
 <?php mh_map_actions();?>
 	
 <div id="content" role="main">
