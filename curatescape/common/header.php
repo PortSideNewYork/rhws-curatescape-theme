@@ -128,6 +128,8 @@ echo head_js(false); // <-- No to Omeka default scripts
 
 <div id="wrap">
 
+    <?php if(isset($maptype)): ?>
 	<figure id="hero">
 		<?php echo mh_which_content($maptype,$item,$tour); ?>	
 	</figure>
+	<?php endif; ?>

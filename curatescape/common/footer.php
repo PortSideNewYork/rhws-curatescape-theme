@@ -21,6 +21,12 @@
 		<?php echo mh_footer_find_us();?>
 		<span id="copyright"><?php echo mh_license();?></span> 
 		<span id="powered-by"><?php echo __('Powered by <a href="http://omeka.org/">Omeka</a> + <a href="http://curatescape.org">Curatescape</a>');?></span>
+        <span id="sponsored-by">
+        Site hosting provided by 
+          <a href="http://www.siliconservers.com" target="_blank">
+            <img height="50" src="<?php echo img('siliconservers.png'); ?>" />
+          </a>
+        </span>
 	</p>
 	
 	<div class="custom">

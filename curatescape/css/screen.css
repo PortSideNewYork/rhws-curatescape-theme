@@ -206,8 +206,17 @@ body#file figure#hero{display:none !important;}#file .item-file img{width:auto !
 @media only screen and (max-width:50em){body#error #hero{display:none}}body#error #content{text-align:center;margin-top:5em;min-height:15em}
 
 /*! FOOTER */
-footer.main .custom{float:none;width:100%;margin:1em auto}footer.main{max-width:50em; text-align:center;margin-top:1em;padding:.5em;padding-bottom:3em}footer.main nav{margin-bottom:.25em}footer.main p{font-size:.9em}footer.main p.default{line-height:.5em;margin:1em auto;width:100%}#app-store-links{width:100%;display:block;padding:.75em 0;font-style:italic}footer.main span{display:inline-block;line-height:1.4;margin-bottom:.5em}footer.main span.find-us-footer{color:#777;line-height: 4em;}
-footer #app-store-links,footer #find-us-footer, footer #copyright,footer #powered-by{display: block;}footer #copyright{padding: 0.75em 0 0;}footer #app-store-links{padding-bottom: .5em;}
+footer.main .custom{float:none;width:100%;margin:1em auto}
+footer.main{max-width:50em; text-align:center;margin-top:1em;padding:.5em;padding-bottom:3em}
+footer.main nav{margin-bottom:.25em}
+footer.main p{font-size:.9em}
+footer.main p.default{line-height:.5em;margin:1em auto;width:100%}
+#app-store-links{width:100%;display:block;padding:.75em 0;font-style:italic}
+footer.main span{display:inline-block;line-height:1.4;margin-bottom:.5em}
+footer.main span.find-us-footer{color:#777;line-height: 4em;}
+footer #app-store-links,footer #find-us-footer, footer #copyright, footer #powered-by, footer #sponsored-by{display: block;}
+footer #copyright{padding: 0.75em 0 0;}
+footer #app-store-links{padding-bottom: .5em;}
 
 /*! Social Links*/
 a.ext-social-link{background:#942828;color:#fafafa;border:1px solid #942828;padding:.5em;display:inline-block;margin:0.25em;text-align:center;border-radius:0.25em}a.ext-social-link:hover{background:#f2f2f2;color:#942828;border-color:#111;box-shadow:0 0 .1em #942828}a.ext-social-link.email:hover,a.ext-social-link.email:hover{background:#f2f2f2}a.ext-social-link.youtube:hover{background:#de2826;color:#fff;border-color:#fff}a.ext-social-link.facebook:hover{background:#305891;color:#fff;border-color:#fff}a.ext-social-link.twitter:hover{background:#2ca8d2;color:#fff;border-color:#fff}a.ext-social-link.pinterest:hover{background:#c82828;color:#fff;border-color:#fff}a.ext-social-link.apple:hover{background:#000;color:#fff;border-color:#fff}a.ext-social-link.android:hover{background:#90BE4E;color:#fff;border-color:#fff}a.ext-social-link span{display:inline}@media only screen and (max-width:50em){body footer.main{padding-top:3em;background:#942828;color:#fafafa;margin-top:0}footer.main a.ext-social-link{background:#555}footer.main a.ext-social-link.email:hover,footer.main a.ext-social-link.instagram:hover{background:#f2f2f2}a.ext-social-link{margin:0.15em;border-radius:5%;font-size:20px;width:32px;height:32px;line-height:32px}a.ext-social-link span.social_label{display:none}footer.main input#search{margin-bottom:.5em}}@media only screen and (max-width:30em){a.ext-social-link{margin:0}}
@@ -248,3 +257,11 @@ body.login form#login-form{width:100%;margin-bottom: 2em;}body.login fieldset#fi
 }
 
 .lte8 .map-actions a.location{display: none;}.lte8 #wrap{border:1px solid #ccc;}.lte8 h5.no-audio{display:none}.lte8 footer input#search{border-color:#ccc}.lte8 .random-story-link.big-button,.big-button{width:100%;display:block}.lte8 a.app-store,.lte8 a.app-store#android,.lte8 a.app-store#apple{background:#942828}.lte7 #tours.show #hero,.lte7 #tours.browse #hero,.lte7 .page #hero{display:none;visibility:collapse}.lte7 #hero{display:none;height:0;margin-bottom:1em}.lte7 input#submit_search{display:none}.lte7 input#search{width:100%}.lte7 nav.secondary-nav ul li{display:inline}.lte8 ul.pagination li a{display: inline;}.lte8 body.big .item-file-container,.lte8 body.big .item-file-container .item-file,.lte8 body.big .item-file-container .item-file a{height:0 !important}
+
+span.rhws-image-date {
+	color: #999;
+	padding-left: 5em;
+	padding-top: 6px;
+	display: inline-block;
+	font-size: larger;
+}

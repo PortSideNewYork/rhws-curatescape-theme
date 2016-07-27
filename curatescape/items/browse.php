@@ -34,6 +34,9 @@ else{
 echo head(array('maptype'=>$maptype,'title'=>$title,'bodyid'=>'items','bodyclass'=>$bodyclass)); 
 ?>
 
+<?php ws_get_collections_index(); ?>
+
+
 <?php mh_map_actions();?>
 
 <div id="content">

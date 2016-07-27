@@ -374,7 +374,8 @@ function mh_display_map($type=null,$item=null,$tour=null){
 		/* browsing by tags, subjects, search results, etc, map is bounded according to content */
 		$uri=$_SERVER['REQUEST_URI'];
 		$uri=$uri.'&output=mobile-json';
-		$json_source=WEB_ROOT.query_param_minus_pagination($uri);
+		//$json_source=WEB_ROOT.query_param_minus_pagination($uri);
+		$json_source=query_param_minus_pagination($uri);
 		break;		
 
 	case 'story':
@@ -397,6 +398,10 @@ function mh_display_map($type=null,$item=null,$tour=null){
 		$marker='/themes/curatescape/images/marker.png';
 	}
 ?>
+<!-- 
+<h3>WEB_ROOT is <?php echo WEB_ROOT; ?></h3>
+<h3>REQUEST_URI is <?php echo $_SERVER['REQUEST_URI']; ?></h3>
+ -->
 		<script type="text/javascript">
 
 
@@ -424,6 +429,7 @@ function mh_display_map($type=null,$item=null,$tour=null){
 
 		jQuery(document).ready(function() {
 
+			
 			if ((getChromeVersion()>=50 && !isSecure) || !navigator.geolocation){
 				// Hide the geolocation button on insecure sites for Chrome 50+ users and for browsers with no support
 				jQuery('.map-actions a.location').addClass('hidden');
@@ -460,6 +466,12 @@ function mh_display_map($type=null,$item=null,$tour=null){
 				minZoom: 3,
 				scrollWheelZoom: false,
 			}).setView(center, zoom);
+
+			//Set max bounds to not show outside NY Harbor area: bottom-left, top-right
+			map.setMaxBounds([
+			      			[40.600565, -74.115339],
+			      			[40.710751, -73.967077]
+			      			]);
 			
 			// Layer controls
 			// Add later
@@ -536,51 +548,57 @@ function mh_display_map($type=null,$item=null,$tour=null){
 							null, 
 							{ collapsed: true }
 					);
+
+                    if(useClusters==true){
 						
-					//create array of L.featureGroup.subGroup so we can turn markers on/off based on Collection
-					//each array index is an object with collname= and what will be a featureGroup.subGroup
-					var mapSubGroups = {};
-
-					//Add a default 'none' group and add to controls
-					mapSubGroups['none'] = L.featureGroup.subGroup(markers);
-					mapControl.addOverlay(mapSubGroups['none'], "History");
-					
-					
-                    for (cind = 0; cind < collectioninfo.length; cind++) {
-						var collinfo = collectioninfo[cind];
-
-						mapSubGroups[collinfo.collname] = L.featureGroup.subGroup(markers);
-
-						if (collinfo.collname != "none") {
-							mapControl.addOverlay(mapSubGroups[collinfo.collname], collinfo.collname);
-						}
+						//create array of L.featureGroup.subGroup so we can turn markers on/off based on Collection
+						//each array index is an object with collname= and what will be a featureGroup.subGroup
+						var mapSubGroups = {};
+	
+						//Add a default 'none' group and add to controls
+						mapSubGroups['none'] = L.featureGroup.subGroup(markers);
+						mapControl.addOverlay(mapSubGroups['none'], "History");
+						
+						
+	                    for (cind = 0; cind < collectioninfo.length; cind++) {
+							var collinfo = collectioninfo[cind];
+	
+							mapSubGroups[collinfo.collname] = L.featureGroup.subGroup(markers);
+	
+							if (collinfo.collname != "none") {
+								mapControl.addOverlay(mapSubGroups[collinfo.collname], collinfo.collname);
+							}
+	                    }
                     }
-
                     
                     
                     //Now add each item into correct group
 			        jQuery.each(data.items,function(i,item){
 
-						//Get Collection name of Item, from multidimensional array popluated on server
-			        	var collection_name = "none";
-                        for (cind = 0; cind < collectioninfo.length; cind++) {
-							var collinfo = collectioninfo[cind];
-							if (collinfo.collitems.indexOf(item.id) != -1) {
-								collection_name = collinfo.collname;
-								break;
-							}
-                        }
-			        	
-				        var address = item.address ? item.address : '';
-						var c = (item.featured==1 && featured_color) ? featured_color : color;
-						var inner = (item.featured==1 && featuredStar) ? "star" : "circle";
 
-						if (collection_name == "Red Hook Retail Businesses") {
-                            // see https://www.mapbox.com/maki-icons/ for choices
-							inner = "commercial";
-							c = "#008B8B";
+						if(useClusters==true) {
+			        	
+							//Get Collection name of Item, from multidimensional array popluated on server
+				        	var collection_name = "none";
+	                        for (cind = 0; cind < collectioninfo.length; cind++) {
+								var collinfo = collectioninfo[cind];
+								if (collinfo.collitems.indexOf(item.id) != -1) {
+									collection_name = collinfo.collname;
+									break;
+								}
+	                        }
+				        	
+					        var address = item.address ? item.address : '';
+							var c = (item.featured==1 && featured_color) ? featured_color : color;
+							var inner = (item.featured==1 && featuredStar) ? "star" : "circle";
+	
+							if (collection_name == "Red Hook Retail Businesses") {
+	                            // see https://www.mapbox.com/maki-icons/ for choices
+								inner = "commercial";
+								c = "#008B8B";
+							}
 						}
-						
+												
 				        if(typeof(item.thumbnail)!="undefined"){
 					        var image = '<a href="<?php echo WEB_ROOT;?>/items/show/'+item.id+'" class="curatescape-infowindow-image '+(!item.thumbnail ? 'no-img' : '')+'" style="background-image:url('+item.thumbnail+');"></a>';
 					    }else{
@@ -1260,10 +1278,18 @@ function mh_item_images($item,$index=0,$html=null){
 				'<a><strong><em><i><b><span>') 
 				);
 			$photoTitle = mh_normalize_special_characters(metadata($file,array('Dublin Core', 'Title')));
+			
+			$photoDate = mh_normalize_special_characters(metadata($file,array('Dublin Core', 'Date')));
+				
 
 			if($photoTitle){
 				$fancyboxCaption= mh_normalize_special_characters(mh_file_caption($file,true));
 				$fancyboxCaption = '<span class="main"><div class="caption-inner">'.strip_tags($fancyboxCaption,'<a><strong><em><i><b><span>').'</div></span>'.$filelink;
+				
+				if ($photoDate) {
+					$fancyboxCaption .= "<span class='rhws-image-date'>Date: " . $photoDate
+					. "</span>";
+				}
 			}else{
 				$fancyboxCaption = '<span class="main"><div class="caption-inner">Image '.($index+1).'</div></span>'.$filelink;
 			}
@@ -1632,19 +1658,27 @@ function mh_dates() {
 ** These links are hard to validate via W3 for some reason
 */
 function mh_subjects(){
-	$subjects = metadata('item',array('Dublin Core', 'Subject'), 'all');
+	//$subjects = metadata('item',array('Dublin Core', 'Subject'), 'all');
+	$subjects = metadata('item',
+			array('Dublin Core', 'Subject'), 
+			array('all' => true));
 	if (count($subjects) > 0){
 
 		echo '<h3>'.__('Subjects').'</h3>';
 		echo '<ul>';
 		foreach ($subjects as $subject){
+			//echo "raw subject = " . strip_formatting($subject);
+			$subject = strip_formatting($subject);
+					
 			$link = WEB_ROOT;
 			$link .= htmlentities('/items/browse?term=');
 			$link .= rawurlencode($subject);
 			$link .= htmlentities('&search=&advanced[0][element_id]=49&advanced[0][type]=contains&advanced[0][terms]=');
 			$link .= urlencode(str_replace('&amp;','&',$subject));
 
-			$subject = str_replace("--", "&#8212;", $subject);
+			//$subject_text = str_replace("--", "&#8212;", $subject);
+			//echo "raw subject = " . $subject . " and ";
+			//echo "raw link = " . $link;
 				
 			echo '<li><a href="'.$link.'">'.$subject.'</a></li> ';
 		}
@@ -2672,32 +2706,7 @@ function ws_get_collections_index() {
 
 	} //end loop through Collections
 
-	/*
-	//Now find items that are not in a collection
-	
-	$collitems = array ();
-	
-	// Get all items
-	$collitemslist = get_db()->getTable( 'Item' )->findBy( array (
-			'collection' => NULL
-	), 10000 );
-	
-	
-	foreach ( $collitemslist as $citem ) {
-		// Just add the ID of the item to the list
-		array_push ( $collitems, metadata ( $citem, 'id' ) );
-	} //end loop through Items
-	
 
-	$collinfoitem = array (
-			"collname" => "NOCOLLECTION",
-			"collid" => -1,
-			"collitems" => $collitems
-	);
-	
-	array_push ( $collinfo, $collinfoitem );
-	*/
-	
 	echo "<script type=\"text/javascript\">\n";
 
 	echo "var collectioninfo = " . json_encode($collinfo) . ";\n";
