@@ -610,8 +610,11 @@ function mh_display_map($type=null,$item=null,$tour=null){
 					    var html = image+number+'<a class="curatescape-infowindow-title" href="<?php echo WEB_ROOT;?>/items/show/'+item.id+'">'+item.title
 					    +'</a><br>'+'<div class="curatescape-infowindow-address">'+address.replace(/(<([^>]+)>)/ig,"")+'</div>';
 						
-						
-						var marker = L.marker([item.latitude,item.longitude],{icon: icon(c,inner)}).bindPopup(html);
+						/* Add title as hover, unescaping apostrophes */
+						var marker = L.marker([item.latitude,item.longitude],
+								{icon: icon(c,inner),
+							title: item.title.replace("&#039;", "'")
+							}).bindPopup(html);
 						
 						group.push(marker);  //Not used in clustering on?
 						
@@ -1261,9 +1264,13 @@ function mh_footer_scripts_init(){
 function mh_item_images($item,$index=0,$html=null){
 
 	foreach (loop('files', $item->Files) as $file){
-		$img = array('image/jpeg','image/jpg','image/png','image/jpeg','image/gif');
+		$img = array(
+				'image/jpeg',
+				'image/jpg',
+				'image/png',
+				'image/gif',
+				'application/pdf');
 		$mime = metadata($file,'MIME Type');
-		
 
 		if(in_array($mime,$img)) {
 			if($index==0) {
