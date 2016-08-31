@@ -496,6 +496,57 @@ function mh_display_map($type=null,$item=null,$tour=null){
                 });
 
             noaaMap.addTo(map);
+
+
+            // Add Citi Bike stations
+            var cblg = L.layerGroup();
+            var cbindex;
+
+            cblg.addTo(map);
+
+            var citibike_icon = L.icon({
+            	  iconUrl: '<?php echo img('citibike-in-service.png')?>',
+            	  iconSize: [33,42],
+            	  iconAnchor: [16,42],
+            	  popupAnchor: [0, -30]
+            	  });
+	        var citibike_icon_planned = L.icon({
+            	  iconUrl: '<?php echo img('citibike-planned.png')?>',
+            	  iconSize: [33,42],
+            	  iconAnchor: [16,42],
+            	  popupAnchor: [0, -30]
+            	  });
+			//This is only at the root of the server, not specific to an omeka environment
+	        $.getJSON('/citibike_stations.json', function(data) {
+	            var citibike_stations = data;
+
+	          for (cbind = 0; cbind < citibike_stations.length; cbind++) {
+	                var cbinfo = citibike_stations[cbind];
+
+                    var cbtitle = "Citi Bike";
+                    var cbicon = citibike_icon;
+
+                    if (cbinfo['is_renting'] == 0) {
+                    	cbtitle = "Citi Bike Coming Soon";
+                    	cbicon = citibike_icon_planned;
+                    }
+                    var cbmark = L.marker([cbinfo['lat'], cbinfo['lon']],
+                    {title: cbtitle,
+             	       icon: cbicon
+                    })
+                    .bindPopup(
+                          "Citi Bike at " + cbinfo['name']
+                          + ". Bikes: "
+                          + cbinfo['num_bikes_available']
+                          + " / Docks:" + cbinfo['num_docks_available']
+                          );
+
+                          cbmark.addTo(cblg);
+	          } //end for loop
+	        }); //end function
+
+
+            //-----End Citi Bike--------
 			
 			// Center marker and popup on open
 			map.on('popupopen', function(e) {
