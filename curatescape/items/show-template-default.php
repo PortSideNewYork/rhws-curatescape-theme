@@ -108,7 +108,11 @@ echo head(array('item'=>$item, 'maptype'=>'story', 'bodyid'=>'items', 'bodyclass
 				<div class="item-related-links">
 				<?php mh_related_links();?>
 				</div>
-				
+
+     <?php /*fire_plugin_hook('public_items_show', array('view' => $this, 'item' => $item)); */
+     echo get_specific_plugin_hook_output('ItemRelations', 'public_items_show', array('view' => $this, 'item' => $item));
+     ?>
+								
 				<div class="date-stamp">
 				<?php echo mh_post_date(); ?>				
 				</div>

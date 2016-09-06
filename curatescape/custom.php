@@ -484,7 +484,7 @@ function mh_display_map($type=null,$item=null,$tour=null){
 			//carto.addTo(map);
 			
 
-			//Add custom map layer
+			//-----Add custom NOAA chart map layer-----
 			// http://69.169.84.210:8080/geoserver/wms
 			// rhws:noaa_rnc_12334
 
@@ -496,6 +496,7 @@ function mh_display_map($type=null,$item=null,$tour=null){
                 });
 
             noaaMap.addTo(map);
+            //---end adding NOAA map------
 
 
             // Add Citi Bike stations
@@ -1247,7 +1248,8 @@ function mh_footer_scripts_init(){
 			
 			loadCSS('<?php echo WEB_ROOT;?>/themes/curatescape/javascripts/fancybox/source/jquery.fancybox.css');
 			loadCSS('<?php echo WEB_ROOT;?>/themes/curatescape/javascripts/fancybox/source/helpers/jquery.fancybox-buttons.css');
-			loadJS('<?php echo WEB_ROOT;?>/themes/curatescape/javascripts/fancybox/source/jquery.fancybox.pack.js', function(){
+			loadJS('<?php echo WEB_ROOT;?>/themes/curatescape/javascripts/fancybox/source/jquery.fancybox.pack.js');
+			loadJS('<?php echo WEB_ROOT;?>/themes/curatescape/javascripts/fancybox/source/helpers/jquery.fancybox-buttons.js', function(){
 				// checkWidth.js sets 'big' and 'small' body classes
 				// FancyBox is used only when the body class is 'big'
 				jQuery("body.big .fancybox").fancybox({
@@ -1274,9 +1276,9 @@ function mh_footer_scripts_init(){
 				        },
 		                buttons	: {}
 				    }
-				});				
-			});
-			loadJS('<?php echo WEB_ROOT;?>/themes/curatescape/javascripts/fancybox/source/helpers/jquery.fancybox-buttons.js');
+				}); //end jQuery for .fancybox				
+
+			}); //end loadJS
 			
 
 
@@ -1354,7 +1356,21 @@ function mh_item_images($item,$index=0,$html=null){
 						
 			$html .= '<div class="item-file-container">';
 
-			$html .= file_markup($file, array('imageSize' => 'fullsize','linkAttributes'=>array('data-caption'=>$fancyboxCaption,'title'=>$photoTitle, 'class'=>'fancybox', 'rel'=>'group'),'imgAttributes'=>array('alt'=>$photoTitle) ) );
+			//**Change this for PDFs
+			$imageClass = "fancybox";
+			
+			$html .= file_markup ( $file, array (
+					'imageSize' => 'fullsize',
+					'linkAttributes' => array (
+							'data-caption' => $fancyboxCaption,
+							'title' => $photoTitle,
+							'class' => $imageClass,
+							'rel' => 'group' 
+					),
+					'imgAttributes' => array (
+							'alt' => $photoTitle 
+					) 
+			) );
 
 			$html .= ($photoTitle) ? '<h4 class="title image-title">'.$photoTitle.'</h4>' : '';
 			$html .= '<p class="description image-description">'.( ($photoDesc) ? $photoDesc : '');
@@ -1773,7 +1789,6 @@ function mh_sidebar_nav(){
 	return mh_global_nav();
 
 }
-
 
 /*
 ** Display the item tags

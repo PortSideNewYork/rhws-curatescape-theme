@@ -74,8 +74,14 @@ if ($uploaded_stylesheet=get_theme_option('custom stylesheet')){
  -->
 
 <!-- new 7/25 -->
- <link rel="stylesheet" href="https://npmcdn.com/leaflet@1.0.0-rc.2/dist/leaflet.css" />
- <script src="https://npmcdn.com/leaflet@1.0.0-rc.2/dist/leaflet.js"></script>
+ <link rel="stylesheet" href="https://npmcdn.com/leaflet@1.0.0-rc.3/dist/leaflet.css" />
+ <style type="text/css">
+   .leaflet-pane {
+     z-index: inherit;
+   }
+ </style>
+ 
+ <script src="https://npmcdn.com/leaflet@1.0.0-rc.3/dist/leaflet.js"></script>
  
  
 <?php if(get_theme_option('clustering')):?>
