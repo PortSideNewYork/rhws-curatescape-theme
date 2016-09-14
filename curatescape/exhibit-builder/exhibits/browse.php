@@ -8,7 +8,7 @@ $bodyclass='browse';
 $maptype='focusarea';
 
 if ( (isset($tag) || isset($tags)) && !isset($query) ) {
-	$title = __('Exhibits tagged "%s"',($tag ? $tag : $tags));
+	$title = __('Essays tagged "%s"',($tag ? $tag : $tags));
 	$bodyclass .=' queryresults';
 	$maptype='queryresults';
 }
@@ -23,7 +23,7 @@ elseif (isset($query)) {
 	$maptype='queryresults';
 }	
 else{
-	$title = __('All Exhibits');
+	$title = __('All Essays');
 	$bodyclass .=' items stories';
 }	
 echo head(array('maptype'=>'none','title'=>$title,'bodyid'=>'items','bodyclass'=>$bodyclass)); 
@@ -79,7 +79,7 @@ echo head(array('maptype'=>'none','title'=>$title,'bodyid'=>'items','bodyclass'=
     <div class="pagination"><?php echo pagination_links(); ?></div>
 
     <?php else: ?>
-	<p><?php echo __('There are no exhibits available yet.'); ?></p>
+	<p><?php echo __('There are no essays available yet.'); ?></p>
 	<?php endif; ?>
 
 

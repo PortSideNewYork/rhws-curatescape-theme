@@ -454,7 +454,10 @@ function mh_display_map($type=null,$item=null,$tour=null){
 			});
 
 			var openstreet = L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-			    attribution: '<a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, , <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>'
+			    attribution: '<a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, , <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
+			    detectRetina: true,
+			    maxNativeZoom: 18,
+			    maxZoom: 20
 			});
 
 
@@ -463,7 +466,8 @@ function mh_display_map($type=null,$item=null,$tour=null){
 			// Build the base map
 			var map = L.map('map_canvas',{
 				layers: openstreet,
-				minZoom: 3,
+				minZoom: 12,
+				maxZoom: 20,
 				scrollWheelZoom: false,
 			}).setView(center, zoom);
 
@@ -498,56 +502,20 @@ function mh_display_map($type=null,$item=null,$tour=null){
             noaaMap.addTo(map);
             //---end adding NOAA map------
 
+            
+            //Add a contol to toggle on/off overlays
+            var mapControl = L.control.layers(
+                    {
+                		"Terrain":terrain,
+                		"Street":openstreet
+                	}, 
+					null, 
+					{ 
+    					collapsed: true 
+    				}
+			);
+            
 
-            // Add Citi Bike stations
-            var cblg = L.layerGroup();
-            var cbindex;
-
-            cblg.addTo(map);
-
-            var citibike_icon = L.icon({
-            	  iconUrl: '<?php echo img('citibike-in-service.png')?>',
-            	  iconSize: [33,42],
-            	  iconAnchor: [16,42],
-            	  popupAnchor: [0, -30]
-            	  });
-	        var citibike_icon_planned = L.icon({
-            	  iconUrl: '<?php echo img('citibike-planned.png')?>',
-            	  iconSize: [33,42],
-            	  iconAnchor: [16,42],
-            	  popupAnchor: [0, -30]
-            	  });
-			//This is only at the root of the server, not specific to an omeka environment
-	        $.getJSON('/citibike_stations.json', function(data) {
-	            var citibike_stations = data;
-
-	          for (cbind = 0; cbind < citibike_stations.length; cbind++) {
-	                var cbinfo = citibike_stations[cbind];
-
-                    var cbtitle = "Citi Bike";
-                    var cbicon = citibike_icon;
-
-                    if (cbinfo['is_renting'] == 0) {
-                    	cbtitle = "Citi Bike Coming Soon";
-                    	cbicon = citibike_icon_planned;
-                    }
-                    var cbmark = L.marker([cbinfo['lat'], cbinfo['lon']],
-                    {title: cbtitle,
-             	       icon: cbicon
-                    })
-                    .bindPopup(
-                          "Citi Bike at " + cbinfo['name']
-                          + ". Bikes: "
-                          + cbinfo['num_bikes_available']
-                          + " / Docks:" + cbinfo['num_docks_available']
-                          );
-
-                          cbmark.addTo(cblg);
-	          } //end for loop
-	        }); //end function
-
-
-            //-----End Citi Bike--------
 			
 			// Center marker and popup on open
 			map.on('popupopen', function(e) {
@@ -576,8 +544,10 @@ function mh_display_map($type=null,$item=null,$tour=null){
 					if(useClusters==true){
 						var markers = L.markerClusterGroup({
 							zoomToBoundsOnClick:true,
+							//disableClusteringAtZoom: 18,
 							//disableClusteringAtZoom: clusterIntensity,
-							spiderfyOnMaxZoom:true,
+							//spiderfyOnMaxZoom:true,
+							maxClusterRadius:45, //default is 80 pixels
 							polygonOptions: {
 								'stroke': false,
 								'color': '#000',
@@ -590,16 +560,6 @@ function mh_display_map($type=null,$item=null,$tour=null){
 					}
 					
 					
-                    //also a contol to toggle on/off overlays
-
-                    var mapControl = L.control.layers(
-                    		{
-                				"Terrain":terrain,
-                				"Street":openstreet,
-                			}, 
-							null, 
-							{ collapsed: true }
-					);
 
                     if(useClusters==true){
 						
@@ -678,6 +638,223 @@ function mh_display_map($type=null,$item=null,$tour=null){
 						}
 
 			        });
+
+		            // Add Citi Bike stations
+		            var cblg = L.layerGroup();
+		            var cbindex;
+
+		            //Not on by default - selectable from Control
+		            //cblg.addTo(map);
+					//Also, these are not part of a cluster group
+		            
+		            var citibike_icon = L.icon({
+		            	  iconUrl: '<?php echo img('citibike-in-service.png')?>',
+		            	  iconSize: [33,42],
+		            	  iconAnchor: [16,42],
+		            	  popupAnchor: [0, -30]
+		            	  });
+			        var citibike_icon_planned = L.icon({
+		            	  iconUrl: '<?php echo img('citibike-planned.png')?>',
+		            	  iconSize: [33,42],
+		            	  iconAnchor: [16,42],
+		            	  popupAnchor: [0, -30]
+		            	  });
+					//This is only at the root of the server, not specific to an omeka environment
+			        $.getJSON('/citibike_stations.json', function(data) {
+			        	var citibike_stations = data;
+
+			          for (cbind = 0; cbind < citibike_stations.length; cbind++) {
+			                var cbinfo = citibike_stations[cbind];
+
+		                    var cbtitle = "Citi Bike";
+		                    var cbicon = citibike_icon;
+
+		                    if (cbinfo['is_renting'] == 0) {
+		                    	cbtitle = "Citi Bike Coming Soon";
+		                    	cbicon = citibike_icon_planned;
+		                    }
+		                    var cbmark = L.marker([cbinfo['lat'], cbinfo['lon']],
+		                    {title: cbtitle,
+		             	       icon: cbicon
+		                    })
+		                    .bindPopup(
+		                          "<span class='curatescape-infowindow-title'>"
+		                          + "Citi Bike Station at " + cbinfo['name']
+		                          + "<span style='font-variant: normal; font-size: 85%;'>" 
+		                          + "<br/>&emsp;Available bikes: "
+		                          + cbinfo['num_bikes_available']
+		                          + "<br/>&emsp;Empty bike docks: " + cbinfo['num_docks_available']
+		                          + "</span>"
+		                          + "</span>"
+		                          );
+
+		                          cbmark.addTo(cblg);
+			          } //end for loop
+			        }); //end function
+
+					mapControl.addOverlay(cblg, 'Citi Bike Stations (with bike availability)');
+			        
+		            //-----End Citi Bike--------
+		            
+		            //-----Start MTA Bus info---------
+
+
+					var direction_chars = {
+  						"N":0,
+  						"NE":45,
+  						"E":90,
+  						"SE":135,
+  						"S":180,
+  						"SW":215,
+  						"W":270,
+  						"NW":315
+					};
+		            
+					/*
+					Routes looks like:
+					            "routes": [{
+					                "agencyId": "MTA NYCT",
+					                "color": "6CBE45",
+					                "description": "via Van Brunt St / Columbia St / 9th St",
+					                "id": "MTA NYCT_B61",
+					                "longName": "Park Slope - Downtown Brooklyn",
+					                "shortName": "B61",
+					                "textColor": "FFFFFF",
+					                "type": 3,
+					                "url": "http://web.mta.info/nyct/bus/schedule/bkln/b061cur.pdf"
+					            }, {
+					*/
+					
+					//For given stop, return list of route short names separated by '/'
+					function getRoutes(routeInfo, stop) {
+					    var funcInd;
+					    var stopRoutes = stop['routeIds'];
+					    var ret = "";
+
+					    for (funcInd = 0; funcInd < routeInfo.length; funcInd++) {
+					        if (stopRoutes.indexOf(routeInfo[funcInd]['id']) != -1) {
+					           if (ret) { ret += "/"; }
+					           ret += routeInfo[funcInd]['shortName'];
+					        }
+					    }
+					    return ret;
+					}
+
+					//Keep track of stops added already in previous route
+					var stopAdded = {};
+										
+					var routesData = ['/mta_nyct_b57.json', '/mta_nyct_b61.json'];
+
+					var mta_bus_lg = L.layerGroup();
+					//mta_bus_lg.addTo(map);
+					mapControl.addOverlay(mta_bus_lg, 'MTA Bus Stations');
+					
+
+					routesData.forEach(function(routesDataUrl) {
+				        $.getJSON(routesDataUrl, function(route) {
+
+				        	var stopsinfo = route['data']['references']['stops'];
+				        	var routesinfo = route['data']['references']['routes'];
+
+				        	var routeind;
+
+				        	for (routeind = 0; routeind < stopsinfo.length; routeind++) {
+				        	      var businfo = stopsinfo[routeind];
+
+				        	      //skip if already added
+				        	      if (stopAdded[businfo['id']]) {
+				        	         continue;
+				        	      }
+
+				        	      var stopRoutes = getRoutes(routesinfo, businfo);
+
+				        	      var myicon = L.divIcon(
+				        	           {html: "<span class='my-div-icon-name' style='font-size: 85%;'>"
+				        	           + "<img src='http://twu106.org/sites/twu106.prometheuslabor.com/files/images/mta_nyc_logo_svg1.png' height='18'/><br/>"
+				        	           + stopRoutes
+				        	           + "</span>"
+				        	           + "<span class='my-div-icon-shape' style='transform: rotate(" + direction_chars[businfo['direction']] + "deg) scale(0.75,1.25) ;'>&#x25b2;"
+				        	           + "</span>",
+				        	           className: "mta-bus-icon"
+				        	           }
+				        	      );
+
+				        	      var mtmark = L.marker([businfo['lat'], businfo['lon']],
+				        	          {title: businfo['name'],
+				        	          icon: myicon
+				        	          }
+				        	      ).bindPopup(
+				        	                  stopRoutes + " bus stop headed " + businfo['direction']
+				        	      );
+
+				        	     stopAdded[businfo['id']] = 'y';
+				        	     mtmark.addTo(mta_bus_lg);
+				        	 }
+				        						       
+				        }); //end getJSON
+
+					}); //end routesData.forEach()
+					
+		            //-----End MTA Bus info---------
+		            
+		            //-----Custom map labels
+		            var labels_lg = L.layerGroup();
+		            labels_lg.addTo(map);
+		            
+		            var label_index;
+		            $.getJSON("<?php echo WEB_ROOT;?>/themes/curatescape/files/map_labels.json", function(data) {
+			            var label_data = data;
+				          for (label_index = 0; label_index < label_data.length; label_index++) {
+				                var labelinfo = label_data[label_index];
+
+				                var label_icon = L.divIcon({
+				       			 html: "<div class='map_label'>" + labelinfo['name'] + "</div>"
+				       				 ,
+				       				 className: "label-div-icon"
+				       				 });
+				       					                
+					                
+			                    var label_mark = L.marker([labelinfo['lat'], labelinfo['lon']],
+			                    		{
+		                    		title: labelinfo['name'],
+		                    		icon: label_icon
+	                    		
+			                    		}
+			                    );
+			                    label_mark.addTo(labels_lg);
+				          }
+				          
+			            
+		            });//end function
+					//mapControl.addOverlay(labels_lg, 'Labels');
+
+					//resize text as zooming
+		            map.on('zoomend', function() {
+			            var currentZoom = map.getZoom();
+			            var newFontSize = "8pt";
+			            if (currentZoom <= 12) {
+				            newFontSize = "6pt";
+			            }
+			            else if (currentZoom <= 15) {
+				            newFontSize = "7pt";
+			            }
+			            else if (currentZoom <= 17) {
+				            newFontSize = "8pt";
+			            }
+			            else if (currentZoom <= 20) {
+				            newFontSize = "10pt";
+			            }
+
+			            //alert("Zoom/font: " + currentZoom + "/" + newFontSize);
+			            var myLabels = document.querySelectorAll("div.map_label");
+			            for (var iLabels = 0; iLabels < myLabels.length; iLabels++) {
+				            myLabels[iLabels].style.fontSize = newFontSize;
+			            }
+					});
+		            
+		            
+		            //----End custom map labels
+					        
 			        
 			        if(useClusters==true && type!=='tour' || type=='tour' && clusterTours==true){
 				        //original:
