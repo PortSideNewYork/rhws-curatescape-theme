@@ -167,6 +167,14 @@ function random_item_link($text=null,$class='show'){
 function mh_global_header($html=null){
 	$html.= '<div id="mobile-menu-button"><a class="icon-reorder"><span class="visuallyhidden"> '.__('Menu').'</span></a></div>';
 	$html.= link_to_home_page(mh_the_logo(),array('class'=>'home-link'));
+
+	$html.= "<div style='font-size: x-small;  
+			display:inline-block; position:absolute; margin-top:0.75em; height: 95px; width:75px; 
+			text-align: center; color: #900;'>";
+	$html.= "a project of ";
+	$html.= "<img src='" . img('portsidelogo.png') . "' style='height:60px;'>";
+	$html.= "</div>";
+			
 	$html.= '<div class="menu" role="menu">'.mh_simple_search($formProperties=array('id'=>'header-search')).'<nav role="navigation">'.mh_global_nav().random_item_link().'</nav></div>';
 
 	return $html;
