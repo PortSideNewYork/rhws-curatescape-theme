@@ -170,7 +170,7 @@ function mh_global_header($html=null){
 
 	$html.= "<div style='font-size: x-small;  
 			display:inline-block; position:absolute; margin-top:0.75em; height: 95px; width:75px; 
-			text-align: center; color: #900;'>";
+			text-align: center; color: #900; line-height: normal;'>";
 	$html.= "a project of ";
 	$html.= "<img src='" . img('portsidelogo.png') . "' style='height:60px;'>";
 	$html.= "</div>";
@@ -577,9 +577,11 @@ function mh_display_map($type=null,$item=null,$tour=null){
 	
 						//Add a default 'none' group and add to controls
 						mapSubGroups['none'] = L.featureGroup.subGroup(markers);
-						mapControl.addOverlay(mapSubGroups['none'], "History");
+						mapControl.addOverlay(mapSubGroups['none'], "Stories of Red Hook History");
 						
-						
+
+						//These are coming in ordered by the 'added' column, so if you need to
+						//rearrange, change the 'added' value in phpmyadmin
 	                    for (cind = 0; cind < collectioninfo.length; cind++) {
 							var collinfo = collectioninfo[cind];
 	
@@ -700,7 +702,7 @@ function mh_display_map($type=null,$item=null,$tour=null){
 			          } //end for loop
 			        }); //end function
 
-					mapControl.addOverlay(cblg, 'Citi Bike Stations (with bike availability)');
+					mapControl.addOverlay(cblg, 'Citi Bike Stations');
 			        
 		            //-----End Citi Bike--------
 		            
@@ -871,8 +873,10 @@ function mh_display_map($type=null,$item=null,$tour=null){
 				        
 				        //1. add groups to map, 2. add control to overlays
 				        //Just add items with no collection to map by default
-				        mapSubGroups['none'].addTo(map);
+				        //**THIS WAS ON***mapSubGroups['none'].addTo(map);
 
+				        mapSubGroups['Highlights'].addTo(map);
+				        
 				        mapBounds = markers.getBounds();
 				    }else{
 			        	group=new L.featureGroup(group); 
@@ -2920,7 +2924,7 @@ function ws_get_collections_index() {
 	$collinfo = array ();
 	
 	// Get all Collections
-	$colls = get_records ( 'Collection' );
+	$colls = get_records ( 'Collection', array('sort_field' => 'added', 'sort_dir' => 'u'), 100 );
 	
 	foreach ( $colls as $coll ) {
 		
