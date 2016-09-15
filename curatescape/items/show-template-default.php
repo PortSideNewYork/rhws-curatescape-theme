@@ -109,8 +109,15 @@ echo head(array('item'=>$item, 'maptype'=>'story', 'bodyid'=>'items', 'bodyclass
 				<?php mh_related_links();?>
 				</div>
 
-     <?php /*fire_plugin_hook('public_items_show', array('view' => $this, 'item' => $item)); */
-     echo get_specific_plugin_hook_output('ItemRelations', 'public_items_show', array('view' => $this, 'item' => $item));
+     <?php 
+     	/*fire_plugin_hook('public_items_show', array('view' => $this, 'item' => $item)); */
+		//Only show ItemRelations when there are any for this item
+     	$subjectRelations = ItemRelationsPlugin::prepareSubjectRelations($item);
+    	$objectRelations = ItemRelationsPlugin::prepareObjectRelations($item);
+     
+ 		if ($subjectRelations || $objectRelations) {    
+     		echo get_specific_plugin_hook_output('ItemRelations', 'public_items_show', array('view' => $this, 'item' => $item));
+ 		}
      ?>
 								
 				<div class="date-stamp">
