@@ -167,10 +167,10 @@ function random_item_link($text=null,$class='show'){
 function mh_global_header($html=null){
 	$html.= '<div id="mobile-menu-button"><a class="icon-reorder"><span class="visuallyhidden"> '.__('Menu').'</span></a></div>';
 	$html.= link_to_home_page(mh_the_logo(),array('class'=>'home-link'));
-
-	$html.= "<div style='font-size: x-small;  
-			display:inline-block; position:absolute; margin-top:0.75em; height: 95px; width:75px; 
+	$html.= "<div style='font-size: x-small;
+			display:inline-block; position:absolute; margin-top:1.0em; height: 95px; width:75px;
 			text-align: center; color: #900; line-height: normal;'>";
+	
 	$html.= "a project of ";
 	$html.= "<img src='" . img('portsidelogo.png') . "' style='height:60px;'>";
 	$html.= "</div>";
@@ -427,6 +427,7 @@ function mh_display_map($type=null,$item=null,$tour=null){
 		var clusterIntensity = <?php echo get_theme_option('cluster_intensity') ? get_theme_option('cluster_intensity') : 15;?>; 
 		var alwaysFit = <?php echo get_theme_option('fitbounds');?>; 
 		var markerSize = '<?php echo get_theme_option('marker_size') ? get_theme_option('marker_size') : "m";?>'; 
+		var myMarkerSize = markerSize;
 
 		var isSecure = window.location.protocol == 'https:' ? true : false;
 		function getChromeVersion () {  
@@ -446,7 +447,6 @@ function mh_display_map($type=null,$item=null,$tour=null){
 			var terrain = L.tileLayer('http://tile.stamen.com/terrain/{z}/{x}/{y}.jpg', {
 				attribution: '<a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> | Map Tiles by <a href="http://stamen.com/">Stamen Design</a>'
 			});		
-			
 			var toner = L.tileLayer('http://tile.stamen.com/toner/{z}/{x}/{y}{retina}.png', {
 				attribution: '<a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> | Map Tiles by <a href="http://stamen.com/">Stamen Design</a>',
 				retina: (L.Browser.retina) ? '@2x' : '',
@@ -455,19 +455,16 @@ function mh_display_map($type=null,$item=null,$tour=null){
 				attribution: '<a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> | Map Tiles by <a href="http://www.thunderforest.com/">Thunderforest</a>',
 				retina: (L.Browser.retina) ? '@2x' : '',
 			});	
-							
 			var carto = L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{retina}.png', {
 			    attribution: '<a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> | <a href="https://cartodb.com/attributions">CartoDB</a>',
 			    retina: (L.Browser.retina) ? '@2x' : '',
 			});
-
 			var openstreet = L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 			    attribution: '<a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, , <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
 			    detectRetina: true,
 			    maxNativeZoom: 18,
 			    maxZoom: 20
 			});
-
 
 			var mapBounds; // keep track of changing bounds
 
@@ -514,7 +511,6 @@ function mh_display_map($type=null,$item=null,$tour=null){
             //Add a contol to toggle on/off overlays
             var mapControl = L.control.layers(
                     {
-                		"Terrain":terrain,
                 		"Street":openstreet
                 	}, 
 					null, 
@@ -542,7 +538,7 @@ function mh_display_map($type=null,$item=null,$tour=null){
 			        return L.MakiMarkers.icon({
 			        	icon: markerInner, 
 						color: color, 
-						size: markerSize,
+						size: myMarkerSize,
 						accessToken: "pk.eyJ1IjoiZWJlbGxlbXBpcmUiLCJhIjoiY2ludWdtOHprMTF3N3VnbHlzODYyNzh5cSJ9.w3AyewoHl8HpjEaOel52Eg"
 			    		});	
 			    }				
@@ -585,7 +581,14 @@ function mh_display_map($type=null,$item=null,$tour=null){
 	                    for (cind = 0; cind < collectioninfo.length; cind++) {
 							var collinfo = collectioninfo[cind];
 	
-							mapSubGroups[collinfo.collname] = L.featureGroup.subGroup(markers);
+							if (collinfo.collname == "Highlights") {
+								mapSubGroups[collinfo.collname] = L.layerGroup();
+							}
+							else {
+								mapSubGroups[collinfo.collname] = L.featureGroup.subGroup(markers);
+							}
+
+							
 	
 							if (collinfo.collname != "none") {
 								mapControl.addOverlay(mapSubGroups[collinfo.collname], collinfo.collname);
@@ -614,11 +617,20 @@ function mh_display_map($type=null,$item=null,$tour=null){
 							var c = (item.featured==1 && featured_color) ? featured_color : color;
 							var inner = (item.featured==1 && featuredStar) ? "star" : "circle";
 	
+							myMarkerSize = markerSize;
+							
 							if (collection_name == "Red Hook Retail Businesses") {
 	                            // see https://www.mapbox.com/maki-icons/ for choices
 								inner = "commercial";
 								c = "#008B8B";
 							}
+							else if (collection_name == "Highlights") {
+	                            // see https://www.mapbox.com/maki-icons/ for choices
+								inner = "harbor";
+								c = "#942828";
+								myMarkerSize = 'l'; //options are s, m, l
+							}
+							
 						}
 												
 				        if(typeof(item.thumbnail)!="undefined"){
@@ -779,7 +791,7 @@ function mh_display_map($type=null,$item=null,$tour=null){
 				        	      var stopRoutes = getRoutes(routesinfo, businfo);
 
 				        	      var myicon = L.divIcon(
-				        	           {html: "<span class='my-div-icon-name' style='font-size: 85%;'>"
+				        	           {html: "<span class='my-div-icon-name' style='font-size: 80%;'>"
 				        	           + "<img src='http://twu106.org/sites/twu106.prometheuslabor.com/files/images/mta_nyc_logo_svg1.png' height='18'/><br/>"
 				        	           + stopRoutes
 				        	           + "</span>"
@@ -873,7 +885,7 @@ function mh_display_map($type=null,$item=null,$tour=null){
 				        
 				        //1. add groups to map, 2. add control to overlays
 				        //Just add items with no collection to map by default
-				        //**THIS WAS ON***mapSubGroups['none'].addTo(map);
+				        mapSubGroups['none'].addTo(map);
 
 				        mapSubGroups['Highlights'].addTo(map);
 				        

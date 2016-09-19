@@ -297,6 +297,20 @@ nav ul ul ul {
 .leaflet-popup a{border:none;}
 .home .leaflet-control-attribution{display:none}.home.expand-map .leaflet-control-attribution{display: block;}
 
+.leaflet-control-layers-toggle:before {
+	content: "Map layers";
+	line-height: normal;
+	position: absolute;
+	text-align: center;
+	font-size: 90%;
+	color: #942828;
+	text-shadow: 1px 1px white;
+	top: 100%;
+}
+.leaflet-control-layers {
+	font-variant: small-caps;
+}
+
 /*! MAP actions */
 .no-location .map-actions{display: none;}.map-actions{display:block;width:100%;text-align:center;background:#942828;padding:.25em 0}.map-actions a{color:#fff;border:none;cursor:pointer;display:inline-block;margin:0 1em;padding:.5em}.map-actions a:hover{background:#fafafa;color:#942828}.map-actions a span.label{display:inline}.map-actions a span.alt{display:none}body#home .map-actions{display:none}body#home.fullscreen-map .map-actions{display:block}body.fullscreen-map #map_canvas{display:block !important}i.working{display:inline-block;-moz-animation:spin 2s infinite linear;-o-animation:spin 2s infinite linear;-webkit-animation:spin 2s infinite linear;animation:spin 2s infinite linear}@media only screen and (max-width:50em){body#home .map-actions{display:block}.map-actions a{margin:0;padding:.5em}.fullscreen-map .map-actions a{font-size:.9em; margin:1.25em 0 !important;}.map-actions a span.alt{display:inline}#items.show .map-actions a.fullscreen span.alt:before{content:'Show Location on '}#tours.show .map-actions a.fullscreen span.alt:before{content:'Show Locations on '}#items.show.fullscreen-map .map-actions a.fullscreen span.alt:before{content:'Close '}#tours.show.fullscreen-map .map-actions a.fullscreen span.alt:before{content:'Close '}.map-actions a span.label{display:none}.map-actions a.location,.map-actions a.directions{display:none}.fullscreen-map .map-actions a.location,.fullscreen-map .map-actions a.directions{display:inline-block}}
 
