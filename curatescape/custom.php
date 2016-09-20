@@ -495,10 +495,10 @@ function mh_display_map($type=null,$item=null,$tour=null){
 
 			//-----Add custom NOAA chart map layer-----
 			// http://69.169.84.210:8080/geoserver/wms
-			// rhws:noaa_rnc_12334
+			// was rhws:noaa_rnc_12334
 
            var noaaMap = L.tileLayer.wms("http://69.169.84.210:8080/geoserver/wms", {
-    		layers: 'rhws:noaa_rnc_12334',
+    		layers: 'rhws:12334pyramid3',
         	format: 'image/png',
             transparent: true,
             zIndex: 3
