@@ -477,9 +477,11 @@ function mh_display_map($type=null,$item=null,$tour=null){
 			}).setView(center, zoom);
 
 			//Set max bounds to not show outside NY Harbor area: bottom-left, top-right
+			//      			[40.600565, -74.115339],
+			//      			[40.710751, -73.967077]
 			map.setMaxBounds([
 			      			[40.600565, -74.115339],
-			      			[40.710751, -73.967077]
+			      			[40.729350, -73.967077]
 			      			]);
 			
 			// Layer controls
