@@ -459,8 +459,8 @@ function mh_display_map($type=null,$item=null,$tour=null){
 			    attribution: '<a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> | <a href="https://cartodb.com/attributions">CartoDB</a>',
 			    retina: (L.Browser.retina) ? '@2x' : '',
 			});
-			var openstreet = L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-			    attribution: '<a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, , <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
+			var openstreet = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+			    attribution: '<a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>, , <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
 			    detectRetina: true,
 			    maxNativeZoom: 18,
 			    maxZoom: 20
@@ -483,23 +483,12 @@ function mh_display_map($type=null,$item=null,$tour=null){
 			      			[40.600565, -74.115339],
 			      			[40.729350, -73.967077]
 			      			]);
-			
-			// Layer controls
-			// Add later
-			/*
-			L.control.layers({
-				"Terrain":terrain,
-				"Street":openstreet,
-			}).addTo(map);
-			*/
-			//carto.addTo(map);
-			
 
 			//-----Add custom NOAA chart map layer-----
 			// http://69.169.84.210:8080/geoserver/wms
 			// was rhws:noaa_rnc_12334
 
-           var noaaMap = L.tileLayer.wms("http://69.169.84.210:8080/geoserver/wms", {
+           var noaaMap = L.tileLayer.wms("http://redhookwaterstories.org:8080/geoserver/wms", {
     		layers: 'rhws:12334pyramid3',
         	format: 'image/png',
             transparent: true,
@@ -520,8 +509,6 @@ function mh_display_map($type=null,$item=null,$tour=null){
     					collapsed: true 
     				}
 			);
-            
-
 			
 			// Center marker and popup on open
 			map.on('popupopen', function(e) {
@@ -532,7 +519,6 @@ function mh_display_map($type=null,$item=null,$tour=null){
 			    // pan to new center
 			    map.panTo(map.unproject(px),{animate: true}); 
 			});				
-
 
 			// Add Markers
 			var addMarkers = function(data){				
@@ -564,8 +550,6 @@ function mh_display_map($type=null,$item=null,$tour=null){
 						markers.addTo(map);
 
 					}
-					
-					
 
                     if(useClusters==true){
 						
@@ -575,7 +559,7 @@ function mh_display_map($type=null,$item=null,$tour=null){
 	
 						//Add a default 'none' group and add to controls
 						mapSubGroups['none'] = L.featureGroup.subGroup(markers);
-						mapControl.addOverlay(mapSubGroups['none'], "Stories of Red Hook History");
+						mapControl.addOverlay(mapSubGroups['none'], "Red Hook History");
 						
 
 						//These are coming in ordered by the 'added' column, so if you need to
@@ -589,19 +573,19 @@ function mh_display_map($type=null,$item=null,$tour=null){
 							else {
 								mapSubGroups[collinfo.collname] = L.featureGroup.subGroup(markers);
 							}
-
-							
 	
-							if (collinfo.collname != "none") {
+							if (collinfo.collname == "Maps") {
+								var controlTitle = "Maps / <em><a href='<?php echo url("/maps")?>'>Also See Maps</a></em>";
+								mapControl.addOverlay(mapSubGroups[collinfo.collname], controlTitle);
+							}
+							else if (collinfo.collname != "none") {
 								mapControl.addOverlay(mapSubGroups[collinfo.collname], collinfo.collname);
 							}
 	                    }
                     }
                     
-                    
                     //Now add each item into correct group
 			        jQuery.each(data.items,function(i,item){
-
 
 						if(useClusters==true) {
 			        	
@@ -632,7 +616,6 @@ function mh_display_map($type=null,$item=null,$tour=null){
 								c = "#942828";
 								myMarkerSize = 'l'; //options are s, m, l
 							}
-							
 						}
 												
 				        if(typeof(item.thumbnail)!="undefined"){
@@ -641,7 +624,6 @@ function mh_display_map($type=null,$item=null,$tour=null){
 						    var image = '';
 					    }
 					    var number = (type=='tour') ? '<span class="number">'+(i+1)+'</span>' : '';
-
 
 					    var html = image+number+'<a class="curatescape-infowindow-title" href="<?php echo WEB_ROOT;?>/items/show/'+item.id+'">'+item.title
 					    +'</a><br>'+'<div class="curatescape-infowindow-address">'+address.replace(/(<([^>]+)>)/ig,"")+'</div>';
@@ -720,21 +702,90 @@ function mh_display_map($type=null,$item=null,$tour=null){
 			        
 		            //-----End Citi Bike--------
 		            
-		            //-----Start MTA Bus info---------
-
-
-					var direction_chars = {
-  						"N":0,
-  						"NE":45,
-  						"E":90,
-  						"SE":135,
-  						"S":180,
-  						"SW":215,
-  						"W":270,
-  						"NW":315
-					};
+		            //----Start Marine Traffic info
+		            var mtlg = L.layerGroup();
 		            
-					/*
+		            $.getJSON('/mtdata.json', function(mtdata_json) {
+			            var mtind;
+			        	for (mtind = 0; mtind < mtdata_json.length; mtind++) {
+		            		var mtvinfo = mtdata_json[mtind];
+
+
+		            		var mtShipType = mt_shiptypes[mtvinfo['SHIPTYPE']];
+		            		if (! mtShipType) {
+			            		mtShipType = "Ship";
+		            		}
+
+	            		    var mtShipName = mtvinfo['SHIPNAME'] ? mtvinfo['SHIPNAME'] : "UNKNOWN VESSEL";
+	            		     
+	            		    var mtFlag = mtvinfo['FLAG'] ? mtvinfo['FLAG'] : "";
+	            		     
+	            		    
+			            		
+							var myicon = L.divIcon({
+           					 html: "<span class='mt-div-icon-name'>"
+           					 + mtShipName + "</span>"
+           					 + "<span class='mt-div-icon-shape' style='"
+           					 + "transform: rotate(" + mtvinfo['COURSE'] + "deg) scale(1,2) ;'>&#x25b2;"
+           					 //+ "<span class='mt-div-icon-wake' style='font-size:"
+           					 //+ mtvinfo['LENGTH']/.5 + "%"
+           					 //+ ";'>&#x2261;"
+           					 //+ "</span>"
+           					 + "</span>"
+           					 ,
+           					 className: "mt-div-icon"
+           					 
+					});
+
+							var mtDate = new Date(mtvinfo['TIMESTAMP']);
+
+							var mtMoreInfo = "";
+							if (mtvinfo['MMSI'] != 0) {
+								mtMoreInfo = 
+			            		       "<br/>More info on this vessel at <span id='mtlink'><a target='_blank' href='http://www.marinetraffic.com/en/ais/details/ships/mmsi:"
+			            		       + mtvinfo['MMSI'] + "'>" + mtShipName + "</a></span>";
+							}
+
+							//Make sure these appear under other markers using zIndexOffset
+		            		var mtmark = L.marker([mtvinfo['LAT'], mtvinfo['LONG']],
+		            		      {title: mtShipName,
+		            		      icon: myicon,
+		            		      zIndexOffset: -100
+		            		       }
+		            		     )
+		            		     .bindPopup(
+				            		     "<div class='mt-div-popup'>"
+		            		       + mtShipName 
+		            		       + " ("
+		            		       + mtFlag 
+		            		       + " " + mtShipType
+		            		       + ")"
+		            		       //+ ", MMSI:" + mtvinfo['MMSI'] 
+		            		       + " course  " + mtvinfo['COURSE'] + "&#x00b0;" 
+		            		       + " at " + mtvinfo['SPEED']/10 + " kts." 
+		            		       + "<br/>Data received " + mtDate.toLocaleString()
+		            		       + "<div class='mt-credit'>"
+		            		       + "data courtesy <span id='mtlink'><a href='http://www.marinetraffic.com' target='_blank'>MarineTraffic</a></span>"
+		            		       + mtMoreInfo
+		            		       + "</div>"
+		            		       + "</div>"
+		            		      );
+
+		            		mtmark.addTo(mtlg);
+
+
+						} //end for loop through each ship
+			            
+		            }); //end getJSON for mtdata.json
+
+					//Add marine traffic layer group to map
+					
+		            mtlg.addTo(map);
+		            //----End Marine Traffic info
+		            
+		            //-----Start MTA Bus info---------
+		            
+					<?php /*
 					Routes looks like:
 					            "routes": [{
 					                "agencyId": "MTA NYCT",
@@ -748,6 +799,7 @@ function mh_display_map($type=null,$item=null,$tour=null){
 					                "url": "http://web.mta.info/nyct/bus/schedule/bkln/b061cur.pdf"
 					            }, {
 					*/
+					?>
 					
 					//For given stop, return list of route short names separated by '/'
 					function getRoutes(routeInfo, stop) {
@@ -1472,7 +1524,8 @@ function mh_footer_scripts_init(){
 			        padding:3,
 				    helpers : {
 				         title: {
-				            type: 'over'
+				            //type: 'over'
+					            type: 'outside'
 				        },
 				         overlay : {
 				         	locked : true

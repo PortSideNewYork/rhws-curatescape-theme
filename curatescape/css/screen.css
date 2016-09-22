@@ -13,7 +13,13 @@ a,a:visited{text-decoration:underline}a[href]:after,#item-metadata .item-related
 
 
 /*! ===== Fancybox ===== */
-.fancybox-title-over-wrap{width: 100%; padding: 0 0 0 !important;}
+.fancybox-title-over-wrap{
+	width: 100%; 
+	padding: 0 0 0 !important;
+	/*top:100%;
+	bottom:initial;
+	margin-top:5px;*/
+}
 @media only screen and (max-width: 40em){.fancybox-nav span{visibility:visible;display:inline}}
 
 
@@ -535,7 +541,6 @@ div#item-relations-display-item-relations th, td {
 	white-space:nowrap;
     color: darkBlue;
     text-align: center;
-    /*font-weight: bold;*/
     font-family: sans-serif;
     line-height: normal;
 	text-shadow: 0.5px 0.5px grey;
@@ -545,8 +550,47 @@ div#item-relations-display-item-relations th, td {
     bottom:100%;
     left:100%;
 }
-.my-div-icon-shape {
+
+.my-div-icon-shape,.mt-div-icon-shape {
     position:absolute;
     bottom:0;
     left:0;
+}
+
+/* display marine traffic data */
+.mt-div-icon {
+  /*white-space:nowrap;*/
+  color: #003cb3;
+  font-family: "Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
+  font-weight: normal;
+  font-style: normal;
+  font-size: small;
+  line-height: 80%;
+}
+.mt-div-icon-name {
+    position:absolute;
+    bottom:100%;
+    left:100%;
+    background: blanchedalmond;
+    padding: 1px;
+}
+.mt-div-icon-wake {
+  color: white;
+  display:block;
+  position: absolute;
+  top: 10%;
+  transform: scale(1.0,0.5);
+}
+.mt-credit {
+	display: block;
+	font-size: small;
+}
+.mt-div-popup {
+	font-variant: small-caps;
+	font-size: small;
+	padding: 2px 17px 2px 5px;
+}
+.mt-credit #mtlink {
+	color: blue;
+	font-variant: normal;
 }

@@ -68,28 +68,17 @@ if ($uploaded_stylesheet=get_theme_option('custom stylesheet')){
 <!-- JavaScripts -->
 <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
 
-<!-- orig: 
-<link rel="stylesheet" href="//cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css" />
-<script src="//cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
- -->
-
 <!-- new 7/25 -->
- <link rel="stylesheet" href="https://npmcdn.com/leaflet@1.0.0-rc.3/dist/leaflet.css" />
- <style type="text/css">
-   .leaflet-pane {
-     z-index: inherit;
-   }
- </style>
+<link rel="stylesheet" href="https://npmcdn.com/leaflet@1.0.0-rc.3/dist/leaflet.css" />
+<style type="text/css">
+  .leaflet-pane {
+    z-index: inherit;
+  }
+</style>
  
- <script src="https://npmcdn.com/leaflet@1.0.0-rc.3/dist/leaflet.js"></script>
- 
+<script src="https://npmcdn.com/leaflet@1.0.0-rc.3/dist/leaflet.js"></script>
  
 <?php if(get_theme_option('clustering')):?>
-<!--  orig:
-	<script src='https://api.mapbox.com/mapbox.js/plugins/leaflet-markercluster/v0.4.0/leaflet.markercluster.js'></script>
-	<link href='https://api.mapbox.com/mapbox.js/plugins/leaflet-markercluster/v0.4.0/MarkerCluster.css' rel='stylesheet' />
-	<link href='https://api.mapbox.com/mapbox.js/plugins/leaflet-markercluster/v0.4.0/MarkerCluster.Default.css' rel='stylesheet' />
- -->
 <!-- new 7/25 -->
 <link rel="stylesheet" href="https://cdn.rawgit.com/Leaflet/Leaflet.markercluster/v1.0.0-beta.2.0/dist/MarkerCluster.css" />
 <link rel="stylesheet" href="https://cdn.rawgit.com/Leaflet/Leaflet.markercluster/v1.0.0-beta.2.0/dist/MarkerCluster.Default.css" />
@@ -106,7 +95,6 @@ echo head_js(false); // <-- No to Omeka default scripts
 <?php echo js_tag('ie-polyfills.min');?>
 <![endif]-->
 
-
 <!-- Google Analytics -->
 <?php echo mh_google_analytics();?>
 
@@ -120,7 +108,6 @@ echo head_js(false); // <-- No to Omeka default scripts
 	<span><?php echo __('Please enable JavaScript in your browser settings.');?></span>
 </div>
 
-
 <header class="main active" role="banner">	
 	<?php echo mh_global_header();?>
 	<script>
@@ -130,7 +117,6 @@ echo head_js(false); // <-- No to Omeka default scripts
 	    });
 	</script>
 </header>
-
 
 <div id="wrap">
 
