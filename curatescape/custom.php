@@ -488,7 +488,7 @@ function mh_display_map($type=null,$item=null,$tour=null){
 			// http://69.169.84.210:8080/geoserver/wms
 			// was rhws:noaa_rnc_12334
 
-           var noaaMap = L.tileLayer.wms("http://redhookwaterstories.org:8080/geoserver/wms", {
+           var noaaMap = L.tileLayer.wms("https://redhookwaterstories.org/geoserver/wms", {
     		layers: 'rhws:12334pyramid3',
         	format: 'image/png',
             transparent: true,
@@ -742,7 +742,7 @@ function mh_display_map($type=null,$item=null,$tour=null){
 							var mtMoreInfo = "";
 							if (mtvinfo['MMSI'] != 0) {
 								mtMoreInfo = 
-			            		       "<br/>More info on this vessel at <span id='mtlink'><a target='_blank' href='http://www.marinetraffic.com/en/ais/details/ships/mmsi:"
+			            		       ". More details on this vessel at <span id='mtlink'><a target='_blank' href='http://www.marinetraffic.com/en/ais/details/ships/mmsi:"
 			            		       + mtvinfo['MMSI'] + "'>" + mtShipName + "</a></span>";
 							}
 
@@ -762,7 +762,7 @@ function mh_display_map($type=null,$item=null,$tour=null){
 		            		       + ")"
 		            		       //+ ", MMSI:" + mtvinfo['MMSI'] 
 		            		       + " course  " + mtvinfo['COURSE'] + "&#x00b0;" 
-		            		       + " at " + mtvinfo['SPEED']/10 + " kts." 
+		            		       + " at " + mtvinfo['SPEED']/10 + " kts" 
 		            		       + "<br/>Data received " + mtDate.toLocaleString()
 		            		       + "<div class='mt-credit'>"
 		            		       + "data courtesy <span id='mtlink'><a href='http://www.marinetraffic.com' target='_blank'>MarineTraffic</a></span>"
@@ -846,8 +846,8 @@ function mh_display_map($type=null,$item=null,$tour=null){
 
 				        	      var myicon = L.divIcon(
 				        	           {html: "<span class='my-div-icon-name' style='font-size: 80%;'>"
-				        	           + "<img src='http://twu106.org/sites/twu106.prometheuslabor.com/files/images/mta_nyc_logo_svg1.png' height='18'/><br/>"
-				        	           + stopRoutes
+				        	           + "<img src='http://twu106.org/sites/twu106.prometheuslabor.com/files/images/mta_nyc_logo_svg1.png' height='18'/>"
+				        	           //+ "<br/>" + stopRoutes
 				        	           + "</span>"
 				        	           + "<span class='my-div-icon-shape' style='transform: rotate(" + direction_chars[businfo['direction']] + "deg) scale(0.75,1.25) ;'>&#x25b2;"
 				        	           + "</span>",

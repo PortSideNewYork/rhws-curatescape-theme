@@ -312,14 +312,19 @@ nav ul ul ul {
 .home .leaflet-control-attribution{display:none}.home.expand-map .leaflet-control-attribution{display: block;}
 
 .leaflet-control-layers-toggle:before {
-	content: "Map layers";
+	content: "Map Layers";
 	line-height: normal;
 	position: absolute;
 	text-align: center;
-	font-size: 90%;
-	color: #942828;
-	text-shadow: 1px 1px white;
+	font-size: small;
+	/*color: #942828;*/
+	color: black;
+	background: white;
+	opacity: 0.7;
+	/*text-shadow: 1px 1px white;*/
 	top: 100%;
+	/*font-variant: normal;*/
+	font-family: Tahoma, Geneva, sans-serif;
 }
 .leaflet-control-layers {
 	font-variant: small-caps;
