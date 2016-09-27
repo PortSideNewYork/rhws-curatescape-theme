@@ -564,24 +564,26 @@ function mh_display_map($type=null,$item=null,$tour=null){
 
 						//These are coming in ordered by the 'added' column, so if you need to
 						//rearrange, change the 'added' value in phpmyadmin
-	                    for (cind = 0; cind < collectioninfo.length; cind++) {
-							var collinfo = collectioninfo[cind];
+						if (typeof collectioninfo != 'undefined') {
+							for (cind = 0; cind < collectioninfo.length; cind++) {
+								var collinfo = collectioninfo[cind];
 	
-							if (collinfo.collname == "Highlights") {
-								mapSubGroups[collinfo.collname] = L.layerGroup();
-							}
-							else {
-								mapSubGroups[collinfo.collname] = L.featureGroup.subGroup(markers);
-							}
+								if (collinfo.collname == "Highlights") {
+									mapSubGroups[collinfo.collname] = L.layerGroup();
+								}
+								else {
+									mapSubGroups[collinfo.collname] = L.featureGroup.subGroup(markers);
+								}
 	
-							if (collinfo.collname == "Maps") {
-								var controlTitle = "Maps / <em><a href='<?php echo url("/maps")?>'>Also See Maps</a></em>";
-								mapControl.addOverlay(mapSubGroups[collinfo.collname], controlTitle);
-							}
-							else if (collinfo.collname != "none") {
-								mapControl.addOverlay(mapSubGroups[collinfo.collname], collinfo.collname);
-							}
-	                    }
+								if (collinfo.collname == "Maps") {
+									var controlTitle = "Maps / <span style='font-weight:bold;color:blue;'><a href='<?php echo url("/maps")?>'>click to see more MAPS</a></span>";
+									mapControl.addOverlay(mapSubGroups[collinfo.collname], controlTitle);
+								}
+								else if (collinfo.collname != "none") {
+									mapControl.addOverlay(mapSubGroups[collinfo.collname], collinfo.collname);
+								}
+	                    	} // end for
+						} // end if collectioninfo exists
                     }
                     
                     //Now add each item into correct group
@@ -591,15 +593,18 @@ function mh_display_map($type=null,$item=null,$tour=null){
 			        	
 							//Get Collection name of Item, from multidimensional array popluated on server
 				        	var collection_name = "none";
-	                        for (cind = 0; cind < collectioninfo.length; cind++) {
-								var collinfo = collectioninfo[cind];
-								if (collinfo.collitems.indexOf(item.id) != -1) {
-									collection_name = collinfo.collname;
-									break;
-								}
-	                        }
-				        	
-					        var address = item.address ? item.address : '';
+							if (typeof collectioninfo != 'undefined') {
+					        	
+		                        for (cind = 0; cind < collectioninfo.length; cind++) {
+									var collinfo = collectioninfo[cind];
+									if (collinfo.collitems.indexOf(item.id) != -1) {
+										collection_name = collinfo.collname;
+										break;
+									}
+	                    	    } //end for
+							} //end if
+
+							var address = item.address ? item.address : '';
 							var c = (item.featured==1 && featured_color) ? featured_color : color;
 							var inner = (item.featured==1 && featuredStar) ? "star" : "circle";
 	
