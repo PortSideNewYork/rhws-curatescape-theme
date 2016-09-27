@@ -897,7 +897,7 @@ function mh_display_map($type=null,$item=null,$tour=null){
 					                
 			                    var label_mark = L.marker([labelinfo['lat'], labelinfo['lon']],
 			                    		{
-		                    		title: labelinfo['name'],
+		                    		title: labelinfo['name'].replace(/<\/?[^>]+(>|$)/g, ""),
 		                    		icon: label_icon
 	                    		
 			                    		}
