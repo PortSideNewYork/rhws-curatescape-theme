@@ -555,10 +555,12 @@ div#item-relations-display-item-relations th, td {
 .map_label {
 	font-size: 8pt;
 	font-family: sans-serif;
+	font-variant: small-caps;
 	overflow: hidden;
 	white-space: nowrap;
 	width: 110px;
-	text-shadow: 0.5px 0.5px grey;
+	text-shadow: 0.75px 0.75px grey;
+	line-height: normal;
 }
 
 /* Icon styles for transit */

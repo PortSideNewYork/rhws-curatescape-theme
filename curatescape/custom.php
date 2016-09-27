@@ -920,7 +920,7 @@ function mh_display_map($type=null,$item=null,$tour=null){
 				            newFontSize = "7pt";
 			            }
 			            else if (currentZoom <= 17) {
-				            newFontSize = "8pt";
+				            newFontSize = "9pt";
 			            }
 			            else if (currentZoom <= 20) {
 				            newFontSize = "10pt";

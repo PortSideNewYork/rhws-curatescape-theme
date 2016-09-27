@@ -7,5 +7,20 @@
 	"lat": 40.678301,
 	"lon": -74.019500,
 	"name": "Pier 39/Valentino"
+},
+{
+	"lat": 40.676500,
+	"lon": -74.019000,
+	"name": "Pier 41"
+},
+{
+	"lat": 40.672400,
+	"lon": -74.019400,
+	"name": "Beard Street Pier"
+},
+{
+	"lat": 40.677500,
+	"lon": -74.022900,
+	"name": "<span style='padding:2px;color:darkblue;background:burlywood;font-size:125%'>Resiliency<br/>Information</span>"
 }
 ]
