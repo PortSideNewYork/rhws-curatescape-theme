@@ -1,8 +1,9 @@
-<?php echo head(array('maptype'=>'none','title' => metadata('exhibit', 'title'), 'bodyclass'=>'exhibits summary show','bodyid' => 'exhibit')); ?>
+<?php echo head(array('maptype'=>'none','title' => mh_strip_order_from_title(metadata('exhibit', 'title')), 
+		'bodyclass'=>'exhibits summary show','bodyid' => 'exhibit')); ?>
 
 <div id="content">
 <article class="exhibit show">
-<h2 class="instapaper_title"><?php echo metadata('exhibit', 'title'); ?></h2>
+<h2 class="instapaper_title"><?php echo mh_strip_order_from_title(metadata('exhibit', 'title')); ?></h2>
 
 
 

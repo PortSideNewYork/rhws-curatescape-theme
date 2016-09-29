@@ -418,7 +418,7 @@ function mh_display_map($type=null,$item=null,$tour=null){
 		var color = '<?php echo $color ;?>';
 		var featured_color = '<?php echo $featured_color ;?>';
 		var root = '<?php echo WEB_ROOT ;?>';
-		var source ='<?php echo $json_source ;?>';
+		var source = '<?php echo $json_source ;?>';
 		var center =[<?php echo $pluginlat.','.$pluginlng ;?>];
 		var zoom = <?php echo $zoom ;?>;
 		var featuredStar = <?php echo get_theme_option('featured_marker_star');?>;
@@ -460,7 +460,7 @@ function mh_display_map($type=null,$item=null,$tour=null){
 			    retina: (L.Browser.retina) ? '@2x' : '',
 			});
 			var openstreet = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-			    attribution: '<a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>, , <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
+			    attribution: '<a href="http://www.marinetraffic.com">MarineTraffic</a>, <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
 			    detectRetina: true,
 			    maxNativeZoom: 18,
 			    maxZoom: 20
@@ -582,6 +582,8 @@ function mh_display_map($type=null,$item=null,$tour=null){
 								else if (collinfo.collname != "none") {
 									mapControl.addOverlay(mapSubGroups[collinfo.collname], collinfo.collname);
 								}
+
+
 	                    	} // end for
 						} // end if collectioninfo exists
                     }
@@ -938,21 +940,39 @@ function mh_display_map($type=null,$item=null,$tour=null){
 					        
 			        
 			        if(useClusters==true && type!=='tour' || type=='tour' && clusterTours==true){
-				        //original:
-				        //map.addLayer(markers);
-				        mapControl.addTo(map);
-				        
-				        //1. add groups to map, 2. add control to overlays
-				        //Just add items with no collection to map by default
-				        mapSubGroups['none'].addTo(map);
 
-				        mapSubGroups['Highlights'].addTo(map);
+				        mapControl.addTo(map);
+
+				        //If dealing with query results, turn on all subgroups
+						if (type == 'queryresults') {
+							for (var collkey in mapSubGroups) {
+								if(!mapSubGroups.hasOwnProperty(collkey)) continue;
+								
+								mapSubGroups[collkey].addTo(map);
+							}
+
+							//remove map control
+							mapControl.remove();						
+						}
+						else {
+					        
+					        //1. add groups to map, 2. add control to overlays
+					        //Just add items with no collection to map by default
+					        mapSubGroups['none'].addTo(map);
+
+					        mapSubGroups['Highlights'].addTo(map);
+						}
+
 				        
 				        mapBounds = markers.getBounds();
 				    }else{
+					    
 			        	group=new L.featureGroup(group); 
-						group.addTo(map);	
-						mapBounds = group.getBounds();				    
+						group.addTo(map);
+						mapBounds = group.getBounds();		    
+
+
+						
 				    }
 			        
 					// Fit map to markers as needed			        
@@ -1086,15 +1106,22 @@ function mh_map_actions($item=null,$tour=null,$saddr='current',$coords=null){
 	
 		$show_directions=null;
 		$street_address=null;
-		
+
+		$show_map = true;
+	
 		if($item!==null){
 			
 			// get the destination coordinates for the item
 			$location = get_db()->getTable('Location')->findLocationByItem($item, true);
-			$coords=$location[ 'latitude' ].','.$location[ 'longitude' ];
-			$street_address=mh_street_address($item,false);
+			if ($location) {
+				$coords=$location[ 'latitude' ].','.$location[ 'longitude' ];
+				$street_address=mh_street_address($item,false);
 			
-			$show_directions = true;
+				$show_directions = true;
+			}
+			else {
+				$show_map = false;
+			}
 		
 		}elseif($tour!==null){
 			
@@ -1118,7 +1145,8 @@ function mh_map_actions($item=null,$tour=null,$saddr='current',$coords=null){
 		}
 	
 	?>
-	
+
+	<?php if ($show_map): ?>
 	<div class="map-actions clearfix">
 		
 
@@ -1137,7 +1165,7 @@ function mh_map_actions($item=null,$tour=null,$saddr='current',$coords=null){
 		
 	
 	</div>
-
+	<?php endif; /* end if show_map */ ?>
 	
 	<?php	
 }
@@ -2521,6 +2549,17 @@ function homepage_widget_sections($html=null){
 
 }
 
+/*
+ ** Strip leading [100], e.g., from start of title
+ */
+function mh_strip_order_from_title($title) {
+	$pattern = '/^\[\d{1,4}\]\s*/';
+	return preg_replace(
+			$pattern,
+			"",
+			$title
+			);
+}
 
 
 /*

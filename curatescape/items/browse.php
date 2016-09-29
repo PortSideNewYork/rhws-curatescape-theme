@@ -3,6 +3,13 @@ $tag = (isset($_GET['tag']) ? $_GET['tag'] : null); // items --> browse
 $tags = (isset($_GET['tags']) ? $_GET['tags'] : null); // tags/items --> show
 $subj = ( (isset($_GET['advanced'][0]['element_id']) && $_GET['advanced'][0]['element_id'] == 49 )  ? $_GET['advanced'][0]['terms'] : null );
 $auth= ( (isset($_GET['advanced'][0]['element_id']) && $_GET['advanced'][0]['element_id'] == 39 )  ? $_GET['advanced'][0]['terms'] : null );
+$business= ( (isset($_GET['advanced'][0]['element_id']) && $_GET['advanced'][0]['element_id'] == 101 )  ? $_GET['advanced'][0]['terms'] : null );
+if (!$business) {
+	//$_GET['advanced'][0]['type'] should be 'is+empty', but test isn't working now
+	$business= ( (isset($_GET['advanced'][0]['element_id']) && isset($_GET['advanced'][0]['type']) 
+			&& $_GET['advanced'][0]['element_id'] == 101 
+			) ? "Other Businesses" : null );
+}
 $query = (isset($_GET['search']) ? $_GET['search'] : null);
 $bodyclass='browse';
 $maptype='focusarea';
@@ -24,6 +31,11 @@ elseif ( !empty($auth) ) {
 }
 elseif ($query) {
 	$title = __('Search Results for "%s"', $query);
+	$bodyclass .=' queryresults';
+	$maptype='queryresults';
+}	
+elseif ($business) {
+	$title = __('Search Results for "%s"', $business);
 	$bodyclass .=' queryresults';
 	$maptype='queryresults';
 }	

@@ -65,7 +65,7 @@ echo head(array('maptype'=>'none','title'=>$title,'bodyid'=>'items','bodyclass'=
 		<?php foreach (loop('exhibit') as $exhibit): ?>
 		    <?php $exhibitCount++; ?>
 		    <div class="exhibit <?php if ($exhibitCount%2==1) echo ' even'; else echo ' odd'; ?>">
-		        <h2><?php echo link_to_exhibit(); ?></h2>
+		        <h2><?php echo link_to_exhibit(mh_strip_order_from_title($exhibit->title)); ?></h2>
 		        <?php if ($exhibitDescription = metadata('exhibit', 'description', array('no_escape' => true))): ?>
 		        <div class="description"><?php echo $exhibitDescription; ?></div>
 		        <?php endif; ?>

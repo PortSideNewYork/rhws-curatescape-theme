@@ -1,8 +1,16 @@
 <?php 
 $dc = get_theme_option('dropcap')==1 ? 'dropcap' : null;
 
+/* See if we have a location */
+$maptype = 'story';
+$location = get_db()->getTable( 'Location' )->findLocationByItem( $item, true );
+if (!$location) {
+	$maptype = 'none';
+}
+
+
 echo head(array('item'=>$item, 
-		'maptype'=>'story', 
+		'maptype'=>$maptype, 
 		'bodyid'=>'items', 
 		'bodyclass'=>'show item-story '.$dc,
 		'title' => metadata($item,

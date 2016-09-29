@@ -1,15 +1,22 @@
-<?php echo head(array('maptype'=>'none','title' => html_escape(metadata('exhibit_page', 'title') . ' : '. metadata('exhibit', 'title')), 'bodyclass' => 'show', 'bodyid' => 'exhibit')); ?>
+<?php echo head(array('maptype'=>'none','title' => html_escape(
+		mh_strip_order_from_title(
+		metadata('exhibit_page', 'title')) . ' : '
+		. mh_strip_order_from_title(metadata('exhibit', 'title'))),
+		'bodyclass' => 'show', 'bodyid' => 'exhibit')); ?>
 
 <div id="content">
 <article class="page show">
 
 
 	<div id="primary" class="show" role="main">
-		<h2 class="instapaper_title"><?php echo metadata('exhibit_page', 'title'); ?></h2>
+		<h2 class="instapaper_title"><?php echo mh_strip_order_from_title(
+				metadata('exhibit_page', 'title')); ?></h2>
+		<!-- 
 		<nav id="exhibit-pages">
 		    <?php echo exhibit_builder_page_nav(); ?>
 		</nav>		
-		
+		 -->
+		 
 		<nav id="exhibit-child-pages">
 		    <?php echo exhibit_builder_child_page_nav(); ?>
 		</nav>
