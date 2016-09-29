@@ -463,7 +463,7 @@ function mh_display_map($type=null,$item=null,$tour=null){
 			    attribution: '<a href="http://www.marinetraffic.com">MarineTraffic</a>, <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
 			    detectRetina: true,
 			    maxNativeZoom: 18,
-			    maxZoom: 20
+			    maxZoom: 21
 			});
 
 			var mapBounds; // keep track of changing bounds
@@ -472,7 +472,7 @@ function mh_display_map($type=null,$item=null,$tour=null){
 			var map = L.map('map_canvas',{
 				layers: openstreet,
 				minZoom: 12,
-				maxZoom: 20,
+				maxZoom: 21,
 				scrollWheelZoom: false,
 			}).setView(center, zoom);
 

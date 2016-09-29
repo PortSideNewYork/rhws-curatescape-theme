@@ -187,48 +187,6 @@ a.home-link {
 	border: 0 none transparent;
 }
 
-@media only screen and (max-width:50em) {
-	header.main {
-		background: #fff;
-		min-height: 6.75em;
-		padding: 0 !important;
-		position: relative;
-		box-shadow: 0 0 .5em #942828
-	}
-	header.main .menu {
-		background: #eaeaea;
-		padding-top: .5em;
-		width: 100%;
-		margin: 0 auto;
-		clear: both;
-		text-align: center;
-		box-shadow: 0em .25em .25em #942828;
-		display: none;
-	}
-	header.main .menu.active {
-		display: block;
-	}
-	header.main .random-story-link.show {
-		display: block
-	}
-	#mobile-menu-button {
-		display: block;
-	}
-	header.main #logo-img {
-		max-height: 6em;
-		padding: 0.5em 1em 0 !important
-	}
-	header.main a.home-link {
-		display: inline-block;
-	}
-	.menu.active nav ul ul {
-	    display: inline-block;
-	    position:relative;
-    }
-    .menu.active ul.navigation ul li {
-        display:initial;
-    }
-}
 
 header.main ul.navigation {
 	padding-left: 0;
@@ -315,6 +273,69 @@ nav ul ul ul {
 	position: absolute; left: 100%; top:0;
 }
 
+@media only screen and (max-width:50em) {
+	header.main {
+		background: #fff;
+		min-height: 6.75em;
+		padding: 0 !important;
+		position: relative;
+		box-shadow: 0 0 .5em #942828
+	}
+	header.main .menu {
+		background: #eaeaea;
+		padding-top: .5em;
+		width: 100%;
+		margin: 0 auto;
+		clear: both;
+		text-align: left;
+		box-shadow: 0em .25em .25em #942828;
+		display: none;
+	}
+	header.main.active nav > ul.navigation > li:last-child {
+		text-align: left;
+	}
+	header.main .menu.active {
+		display: block;
+	}
+	header.main .random-story-link.show {
+		display: block
+	}
+	#mobile-menu-button {
+		display: block;
+	}
+	header.main #logo-img {
+		max-height: 6em;
+		padding: 0.5em 1em 0 !important
+	}
+	header.main a.home-link {
+		display: inline-block;
+	}
+    .menu.active nav >ul {
+	    margin-top:0;
+    }
+	.menu.active nav > ul >li {
+	    display: block;
+    }
+	.menu.active nav ul ul {
+	    display: block;
+	    position:relative;
+	    list-style: none;
+	    left:10%;
+	    background:inherit;
+    }
+    .menu.active ul.navigation ul li {
+        display:block;
+        border-bottom:none;
+    }
+    header.main .menu.active a:link {
+    	border-bottom:1px dashed #888;
+    	padding-bottom:0;
+    	margin-bottom:1px;
+    }
+    header.main .menu.active #header-search {
+    	margin:0;
+    }
+}
 
 
 @media only screen and (min-width:50em) {
