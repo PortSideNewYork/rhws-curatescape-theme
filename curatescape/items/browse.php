@@ -54,10 +54,11 @@ echo head(array('maptype'=>$maptype,'title'=>$title,'bodyid'=>'items','bodyclass
 <div id="content">
 
 <section class="browse stories items">	
-	<h2><?php 
+	<h2 style="margin-bottom:0.5em;"><?php 
 	$title .= ( $total_results  ? ': <span class="item-number">'.$total_results.'</span>' : '');
 	echo $title; 
 	?></h2>
+	<h4 style="margin:0;padding-left:1em;font-style:italic;">Don&rsquo;t see what you&rsquo;re looking for? Try checking the &ldquo;Site-wide search&rdquo; box.</h4>
 
 
 

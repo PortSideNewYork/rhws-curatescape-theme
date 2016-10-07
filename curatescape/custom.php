@@ -175,7 +175,22 @@ function mh_global_header($html=null){
 	$html.= "<img src='" . img('portsidelogo.png') . "' style='height:60px;'>";
 	$html.= "</div>";
 			
-	$html.= '<div class="menu" role="menu">'.mh_simple_search($formProperties=array('id'=>'header-search')).'<nav role="navigation">'.mh_global_nav().random_item_link().'</nav></div>';
+	$html.= '<div class="menu" role="menu">'
+			//. '<div class="search-forms">'
+			. mh_simple_search($formProperties=array('id'=>'header-search'))
+	/*		. '<div class="search-selector" style="width:10px;display:inline;">...</div>'
+			. search_form(array('show_advanced' => true, 
+            		'form_attributes'=> array(
+            				'role'=>'search', 
+            				'id'=>'header-search2'
+            				)
+            			)
+            		)*/
+			//. '</div>'
+			. '<nav role="navigation">'
+			. mh_global_nav()
+			. random_item_link()
+			. '</nav></div>';
 
 	return $html;
 
@@ -506,7 +521,8 @@ function mh_display_map($type=null,$item=null,$tour=null){
                 	}, 
 					null, 
 					{ 
-    					collapsed: true 
+    					collapsed: true,
+    					hideSingleBase: true
     				}
 			);
 			
@@ -1178,17 +1194,87 @@ function mh_map_actions($item=null,$tour=null,$saddr='current',$coords=null){
 */
 
 function mh_simple_search($formProperties=array(), $uri = null){
-	// Always post the 'items/browse' page by default (though can be overridden).
+
+	$itemUrl = 	'items/browse?sort_field=relevance';
+	$sitewideUrl = 	'search?query_type=keyword';
+	$itemsPlaceholder = __('Search %s Only',mh_item_label('plural'));
+	
+		// Always post the 'items/browse' page by default (though can be overridden).
 	if (!$uri) {
-		$uri = url('items/browse?sort_field=relevance');
+		$uri = url($itemUrl);
 	}
 
-	$searchQuery = array_key_exists('search', $_GET) ? $_GET['search'] : '';
+	//Get passed in query to re-show
+	if (array_key_exists('search', $_GET)) {
+		$searchQuery = $_GET['search']; 
+	}
+	elseif (array_key_exists('query', $_GET)) {
+		$searchQuery = $_GET['query'];
+	}
+	else {
+		$searchQuery = "";
+	}
+	
+	
 	$formProperties['action'] = $uri;
 	$formProperties['method'] = 'get';
-	$html = '<form ' . tag_attributes($formProperties) . '>' . "\n";
+
+	$html = "<script>"
+		. "function toggleSearch() {
+				var checked = document.getElementById('formTypeCheckbox').checked;
+				var searchFormObject = document.getElementById('header-search');
+				var searchRecordTypesObject = document.getElementById('header-search');
+			
+				var searchTextObject = searchFormObject.getElementsByClassName('textinput')[0];
+				var searchRecordTypesObject = document.getElementById('record-types');
+			
+				//alert('clicked ' + checked + searchTextObject);
+				if (checked) { //using site-wide search
+					searchFormObject.setAttribute('action', '" . url($sitewideUrl) . "');
+					searchTextObject.setAttribute('name', 'query');
+					searchTextObject.setAttribute('placeholder', 'Search Whole Site');
+					searchRecordTypesObject.setAttribute('disabled', 'enabled');
+}
+				else { //item search
+					searchFormObject.setAttribute('action', '" . url($itemUrl) . "');
+					searchTextObject.setAttribute('name', 'search');
+					searchTextObject.setAttribute('placeholder','" . $itemsPlaceholder .  "');
+					searchRecordTypesObject.setAttribute('disabled', 'disabled');
+}
+			}"
+		. "</script>\n";
+	
+	$html .= '<form ' . tag_attributes($formProperties) . '>' . "\n";
+	$html .= '<fieldset style="display:block;float:left;width:4em;
+			font-size:80%;line-height:normal;padding:2px;">' . "\n\n";
+
+	$html .= get_view()->formLabel('formTypeCheckbox', 'Site-wide search',
+			array('style'=>'padding-right:2px;'));
+	$html .= get_view()->formCheckbox('', //name
+			null, //value
+			array('id'=>'formTypeCheckbox',
+					'checked'=>false,
+					'onClick'=>'toggleSearch();') //attribs
+		);
+
+	$html .= '</fieldset>' . "\n\n";
+
+	//This gets toggled to disabled/enabled
+	$html .= '<fieldset id="record-types" disabled="disabled">' . "\n\n";
+	foreach (['Item','File','SimplePagesPage','Exhibit','ExhibitPage'] as $record_type) {
+		$html .= get_view()->formHidden('record_types[]', $record_type);
+	}
+	
+	$html .= '</fieldset>' . "\n\n";
+	
 	$html .= '<fieldset>' . "\n\n";
-	$html .= get_view()->formText('search', $searchQuery, array('name'=>'search','class'=>'textinput','placeholder'=>__('Search %s',mh_item_label('plural'))));
+	
+	$html .= get_view()->formText('search', 
+			$searchQuery, 
+			array('name'=>'search',
+					'class'=>'textinput',
+					'placeholder'=>$itemsPlaceholder));
+			
 	$html .= '</fieldset>' . "\n\n";
 
 	// add hidden fields for the get parameters passed in uri
@@ -1200,7 +1286,7 @@ function mh_simple_search($formProperties=array(), $uri = null){
 		}
 	}
 
-	$html .= '</form>';
+	$html .= "</form>\n";
 	return $html;
 }
 
