@@ -21,6 +21,6 @@
 {
 	"lat": 40.677500,
 	"lon": -74.022900,
-	"name": "<span style='padding:2px;color:darkblue;background:burlywood;font-size:125%'>Resiliency<br/>Information</span>"
+	"name": "<span style='text-shadow:initial;display:block;white-space:normal;padding:2px;color:darkblue;background:burlywood;font-size:145%;width:75%;text-align:center;'><a href='/tours/show/9' title='Resiliency'>Click for Resiliency: Flood Prep</a></span>"
 }
 ]

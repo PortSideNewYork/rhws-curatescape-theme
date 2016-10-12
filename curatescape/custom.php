@@ -496,7 +496,8 @@ function mh_display_map($type=null,$item=null,$tour=null){
 			//      			[40.710751, -73.967077]
 			map.setMaxBounds([
 			      			[40.600565, -74.115339],
-			      			[40.729350, -73.967077]
+			      			[40.729350, -73.908204]
+//			      			[40.729350, -73.967077]
 			      			]);
 
 			//-----Add custom NOAA chart map layer-----
@@ -691,16 +692,24 @@ function mh_display_map($type=null,$item=null,$tour=null){
 					//This is only at the root of the server, not specific to an omeka environment
 			        $.getJSON('/citibike_stations.json', function(data) {
 			        	var citibike_stations = data;
+			        	var d = new Date(0);
 
 			          for (cbind = 0; cbind < citibike_stations.length; cbind++) {
 			                var cbinfo = citibike_stations[cbind];
 
 		                    var cbtitle = "Citi Bike";
 		                    var cbicon = citibike_icon;
+		                    var dataReceived;
+
 
 		                    if (cbinfo['is_renting'] == 0) {
 		                    	cbtitle = "Citi Bike Coming Soon";
 		                    	cbicon = citibike_icon_planned;
+		                    	dataReceived = "";
+		                    }
+		                    else {
+					        	d.setTime(cbinfo['last_reported'] * 1000);
+					        	dataReceived = "<br/><em>Data received " + d.toLocaleString() + "</em>";
 		                    }
 		                    var cbmark = L.marker([cbinfo['lat'], cbinfo['lon']],
 		                    {title: cbtitle,
@@ -713,6 +722,7 @@ function mh_display_map($type=null,$item=null,$tour=null){
 		                          + "<br/>&emsp;Available bikes: "
 		                          + cbinfo['num_bikes_available']
 		                          + "<br/>&emsp;Empty bike docks: " + cbinfo['num_docks_available']
+		                          + dataReceived
 		                          + "</span>"
 		                          + "</span>"
 		                          );
@@ -994,6 +1004,7 @@ function mh_display_map($type=null,$item=null,$tour=null){
 					// Fit map to markers as needed			        
 			        if((type == 'queryresults'|| type == 'tour') || alwaysFit==true){
 				        if(useClusters==true){
+					        //alert("markers bounds: " + markers.getBounds().toBBoxString());
 					        map.fitBounds(markers.getBounds());
 					    }else{
 						    map.fitBounds(group.getBounds());
@@ -1722,7 +1733,7 @@ function mh_item_images($item,$index=0,$html=null){
 				$fancyboxCaption = '<span class="main"><div class="caption-inner">'.strip_tags($fancyboxCaption,'<a><strong><em><i><b><span>').'</div></span>'.$filelink;
 				
 				if ($photoDate) {
-					$fancyboxCaption .= "<span class='rhws-image-date'>Date: " . $photoDate
+					$fancyboxCaption .= "<span class='rhws-image-date'>Date: " . mh_format_date($photoDate)
 					. "</span>";
 				}
 			}else{
@@ -2050,6 +2061,32 @@ function mh_rights() {
 	}
 }
 
+/**
+ * Translates ISO date to output format.  
+ * Also translates '/' in range to hyphen (e.g. 1888/1896 -> 1888-1896)
+ * @param raw date in ISO format $date
+ * @return Date translated to output format
+ */
+function mh_format_date($date) {
+	$dateoutput = $date;
+		
+	if (preg_match('/^[0-9]{4}-[0-9]{1,2}-[0-9]{1,2}/', $date)) {
+		$datestamp = DateTime::createFromFormat('Y-m-d', $date);
+		$dateoutput = date_format($datestamp, 'M. j, Y');
+	}
+	elseif (preg_match('/^[0-9]{4}-[0-9]{1,2}/', $date)) {
+		$datestamp = DateTime::createFromFormat('Y-m', $date);
+		$dateoutput = date_format($datestamp, 'M. Y');
+	}
+	elseif (preg_match('/^[0-9]{4}/', $date)) {
+		$dateoutput = $date;
+	}
+	
+	$dateoutput = str_replace('/','-',$dateoutput);
+	
+	return $dateoutput;
+}
+
 
 /**
  * Dates list
@@ -2070,8 +2107,8 @@ function mh_dates() {
 		foreach ($dates as $date) {
 			$datecount++;
 			
-			$dateoutput = $date;
-			
+			$dateoutput = mh_format_date($date);
+/*			
 			if (preg_match('/^[0-9]{4}-[0-9]{1,2}-[0-9]{1,2}/', $date)) {
 				$datestamp = DateTime::createFromFormat('Y-m-d', $date);
 				$dateoutput = date_format($datestamp, 'M. j, Y');
@@ -2086,7 +2123,7 @@ function mh_dates() {
 				//$dateoutput = DateTime::format($datestamp, 'Y');
 				
 			}
-			
+	*/		
 				
 			//echo "<li>$dateoutput</li>";
 			if ($datecount == 1) {
@@ -2538,7 +2575,12 @@ function mh_social_array(){
 */
 function mh_footer_find_us($separator=' '){
 	if( $services=mh_social_array() ){
-		return '<span id="find-us-footer">'.join($separator,$services).'</span>';
+		return '<span id="find-us-footer">'
+		//. '<span style="border-radius:.25em;width:auto;background:#942828;color:white;padding:10px;"><a style="color:#FFFFFF;border-bottom:initial;" href="https://www.flipcause.com/secure/donate/NTUzMw==" target="_blank">Donate Now</a></span>'
+		. '<a class="ext-social-link" href="https://www.flipcause.com/secure/donate/NTUzMw==" target="_blank">Donate Now</a>'
+		
+					. join($separator,$services)
+		. '</span>';
 	}
 }
 

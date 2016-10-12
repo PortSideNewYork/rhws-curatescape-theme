@@ -22,11 +22,12 @@
 		<?php echo mh_footer_find_us();?>
 		<span id="copyright">
 		<?php echo mh_license();?>
-		&emsp;
+		&ensp;
 		<a href='http://portsidenewyork.org' target='_blank'>
 		<img src='<?php  echo img('portsidelogo.png') ?>' style='height:50px;'>
 		</a>
-		</span> 
+		</span> <?php /* end copyright span */?>
+
 		<span id="powered-by"><?php echo __('Powered by <a href="http://omeka.org/" target="_blank">Omeka</a> + <a href="http://curatescape.org" target="_blank">Curatescape</a>');?></span>
         <span id="sponsored-by">
         Site hosting provided by 
