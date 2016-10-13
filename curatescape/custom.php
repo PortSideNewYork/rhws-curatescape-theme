@@ -1003,7 +1003,7 @@ function mh_display_map($type=null,$item=null,$tour=null){
 			        
 					// Fit map to markers as needed			        
 			        if((type == 'queryresults'|| type == 'tour') || alwaysFit==true){
-				        if(useClusters==true){
+				        if(useClusters==true && type != 'tour'){
 					        //alert("markers bounds: " + markers.getBounds().toBBoxString());
 					        map.fitBounds(markers.getBounds());
 					    }else{

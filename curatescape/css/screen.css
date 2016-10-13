@@ -378,8 +378,9 @@ nav ul ul ul {
 /*! HERO */
 #tours.browse #hero,.page #hero{display: none;}
 /* 9/27/16 reduced (20em->15em) to get more quickly to conten below
-  #hero,#map_canvas{height:20em;}*/
-#hero,#map_canvas{height:15em;}
+  10/13/16 - changed from 15em->18em
+ */
+#hero,#map_canvas{height:18em;}
 #hero{background:none center top no-repeat #ccc;clear:both;background-size:cover;box-shadow:0 0 1em #942828 inset}
 @media only screen and (max-width: 25em){
 	#hero,#map_canvas{height:12em}
@@ -488,7 +489,7 @@ a.leaflet-control-layers-toggle,.leaflet-control-attribution a{border-bottom: no
 #slider{overflow:hidden}
 #slider li div{margin:0;
 	/*height:20em; - need to reduce to 15em since map size is reduced*/
-	height:15em;
+	height:18em;
 	box-shadow:0 0 1em #942828 inset;
 	overflow:hidden;
 	opacity:.9
@@ -589,8 +590,9 @@ input:focus#search{color:#942828}
 	.about-main p{max-height:16em; overflow-y: hidden;}
 	#home #hero,#home #hero #map_canvas{height:30em}
 	/*#items.browse #hero,#items.browse #hero #map_canvas{height:30em}*/
-	/* 9/27/16 reduced height (30em->15em) to allow folks to see there's info after */
-	#items.browse #hero,#items.browse #hero #map_canvas{height:15em}
+	/* 9/27/16 reduced height (30em->15em) to allow folks to see there's info after;
+	10/13/16 - changed from 15em to 18em */
+	#items.browse #hero,#items.browse #hero #map_canvas{height:18em}
 	#home #hero{position:absolute;max-width:50em;z-index:0}
 	#home.expand-map #hero{position:relative}
 	#home.expand-map #about article{width:auto}
