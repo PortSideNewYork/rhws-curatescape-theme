@@ -2553,12 +2553,15 @@ function mh_home_item_list($html=null){
 */
 function mh_social_array(){
 	$services=array();
+
+	array_push($services, '<a class="ext-social-link donate" href="https://www.flipcause.com/secure/donate/NTUzMw==" target="_blank"><span class="icon-donate" aria-hidden="true"></span><span class="social_label"> Donate Now</span></a>');
+	($email=get_theme_option('contact_email')) ? array_push($services,'<a class="ext-social-link email" href="mailto:'.$email.'"><span class="icon-envelope" aria-hidden="true"></span><span class="social_label"> Email Us</span></a>') : null;
+
 	($twitter=get_theme_option('twitter_username')) ? array_push($services,'<a class="ext-social-link twitter" href="https://twitter.com/'.$twitter.'"><span class="icon-twitter" aria-hidden="true"></span><span class="social_label"> Twitter</span></a>') : null;
-	($pinterest=get_theme_option('pinterest_username')) ? array_push($services,'<a class="ext-social-link pinterest" href="http://www.pinterest.com/'.$pinterest.'"><span class="icon-pinterest" aria-hidden="true"></span><span class="social_label"> Pinterest</span></a>') : null;	
+	($pinterest=get_theme_option('pinterest_username')) ? array_push($services,'<a class="ext-social-link pinterest" href="http://www.pinterest.com/'.$pinterest.'"><span class="icon-pinterest" aria-hidden="true"></span><span class="social_label"> Pinterest</span></a>') : null;
 	($facebook=get_theme_option('facebook_link')) ? array_push($services,'<a class="ext-social-link facebook" href="'.$facebook.'"><span class="icon-facebook" aria-hidden="true"></span><span class="social_label"> Facebook</span></a>') : null;
 	($youtube=get_theme_option('youtube_username')) ? array_push($services,'<a class="ext-social-link youtube" href="'.$youtube.'"><span class="icon-youtube-play" aria-hidden="true"></span><span class="social_label"> Youtube</span></a>') : null;
-	($instagram=get_theme_option('instagram_username')) ? array_push($services,'<a class="ext-social-link instagram" href="https://www.instagram.com/'.$instagram.'"><span class="icon-instagram" aria-hidden="true"></span><span class="social_label"> Instagram</span></a>') : null;		
-	($email=get_theme_option('contact_email')) ? array_push($services,'<a class="ext-social-link email" href="mailto:'.$email.'"><span class="icon-envelope" aria-hidden="true"></span><span class="social_label"> Email Us</span></a>') : null;		
+	($instagram=get_theme_option('instagram_username')) ? array_push($services,'<a class="ext-social-link instagram" href="https://www.instagram.com/'.$instagram.'"><span class="icon-instagram" aria-hidden="true"></span><span class="social_label"> Instagram</span></a>') : null;	
 
 	if(count($services)>0){
 		if(count($services)>5){
@@ -2576,11 +2579,8 @@ function mh_social_array(){
 function mh_footer_find_us($separator=' '){
 	if( $services=mh_social_array() ){
 		return '<span id="find-us-footer">'
-		//. '<span style="border-radius:.25em;width:auto;background:#942828;color:white;padding:10px;"><a style="color:#FFFFFF;border-bottom:initial;" href="https://www.flipcause.com/secure/donate/NTUzMw==" target="_blank">Donate Now</a></span>'
-		. '<a class="ext-social-link" href="https://www.flipcause.com/secure/donate/NTUzMw==" target="_blank">Donate Now</a>'
-		
-					. join($separator,$services)
-		. '</span>';
+			. join($separator,$services)
+			. '</span>';
 	}
 }
 
@@ -2772,8 +2772,7 @@ function mh_custom_css(){
 		'.$bg.'
 		background-position: left bottom;
 		background-repeat: no-repeat;
-		/*background-size:cover;*/
-		background-size:contain;
+		background-size:cover;
     }
 	.look-at-me{
 		border-color:'.$color_secondary.';
