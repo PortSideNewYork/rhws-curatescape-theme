@@ -88,6 +88,7 @@ if ($uploaded_stylesheet=get_theme_option('custom stylesheet')){
 <?php endif;
 queue_js_file('libraries.min'); // <-- Modernizr, MakiMarker, Swipe.js, iSOnScreen, LoadJS, LoadCSS
 queue_js_file('check-width');
+queue_js_file('js.cookie');
 echo head_js(false); // <-- No to Omeka default scripts
 // Fancybox, VideoJS (CDN) and AudioJS are loaded asyncronously as needed
 ?>

@@ -526,7 +526,29 @@ function mh_display_map($type=null,$item=null,$tour=null){
     					hideSingleBase: true
     				}
 			);
-			
+
+			//Get previously selected list of overlays
+			var selectedOverlays = Cookies.getJSON('selectedoverlays');
+
+            // Save selected layers in session cookie
+            function setSelectedLayersCookie(type, e) {
+				var overlays = document.getElementsByClassName('leaflet-control-layers-selector');
+				var selected = [];
+				//skip #0 - it's the map base layer
+				for (var i = 1; i < overlays.length; i++) {
+					if (overlays[i].checked) {
+						selected.push(i);
+					}
+				}
+				Cookies.set('selectedoverlays',JSON.stringify(selected));
+            }
+			map.on('overlayadd', function(e) {
+				setSelectedLayersCookie('add', e);
+			});
+			map.on('overlayremove', function(e) {
+				setSelectedLayersCookie('remove', e);
+			});
+            
 			// Center marker and popup on open
 			map.on('popupopen', function(e) {
 				// find the pixel location on the map where the popup anchor is
@@ -578,7 +600,6 @@ function mh_display_map($type=null,$item=null,$tour=null){
 						mapSubGroups['none'] = L.featureGroup.subGroup(markers);
 						mapControl.addOverlay(mapSubGroups['none'], "Red Hook History");
 						
-
 						//These are coming in ordered by the 'added' column, so if you need to
 						//rearrange, change the 'added' value in phpmyadmin
 						if (typeof collectioninfo != 'undefined') {
@@ -960,11 +981,8 @@ function mh_display_map($type=null,$item=null,$tour=null){
 				            myLabels[iLabels].style.fontSize = newFontSize;
 			            }
 					});
-		            
-		            
 		            //----End custom map labels
 					        
-			        
 			        if(useClusters==true && type!=='tour' || type=='tour' && clusterTours==true){
 
 				        mapControl.addTo(map);
@@ -978,27 +996,30 @@ function mh_display_map($type=null,$item=null,$tour=null){
 							}
 
 							//remove map control
-							mapControl.remove();						
+							mapControl.remove();
 						}
 						else {
-					        
-					        //1. add groups to map, 2. add control to overlays
-					        //Just add items with no collection to map by default
-					        mapSubGroups['none'].addTo(map);
-
-					        mapSubGroups['Highlights'].addTo(map);
+							if (selectedOverlays) {
+								//if a cookie with previously selected, use it
+								for (var i = 0; i < selectedOverlays.length; i++) {
+									var whichone = selectedOverlays[i];
+									$('.leaflet-control-layers-overlays label:nth-child(' + whichone + ') div input').click();
+								}
+					        }
+					        else {
+						        //1. add groups to map, 2. add control to overlays
+						        //Just add items with no collection to map by default
+					        	mapSubGroups['none'].addTo(map);
+						        mapSubGroups['Highlights'].addTo(map);
+					        }
 						}
-
 				        
 				        mapBounds = markers.getBounds();
-				    }else{
-					    
+				    }
+				    else {
 			        	group=new L.featureGroup(group); 
 						group.addTo(map);
 						mapBounds = group.getBounds();		    
-
-
-						
 				    }
 			        
 					// Fit map to markers as needed			        
