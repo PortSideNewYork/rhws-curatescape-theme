@@ -54,20 +54,35 @@ echo head(array('maptype'=>$maptype,'title'=>$title,'bodyid'=>'items','bodyclass
 <div id="content">
 
 <section class="browse stories items">	
+	<?php 
+	/* Show results summary if coming from a search or from subject browse */
+		if( !empty($subj) ||
+			isset($_GET['sort_field']) && $_GET['sort_field'] == 'relevance'):
+	?>
+
 	<h2 style="margin-bottom:0.5em;"><?php 
 	$title .= ( $total_results  ? ': <span class="item-number">'.$total_results.'</span>' : '');
 	echo $title; 
 	?></h2>
+	<?php endif;?>
+	
+	<?php 
+		/*Only show alternate search hints if coming from a search */
+		if(
+			isset($_GET['sort_field']) && $_GET['sort_field'] == 'relevance'):
+	?>
 	<h4 style="margin:0;padding-left:1em;font-style:italic;">Don&rsquo;t see what you&rsquo;re looking for? Try checking the &ldquo;Site-wide search&rdquo; box.</h4>
 
-
+	<?php endif; ?>
 
 	<div id="primary" class="browse">
 	<section id="results">
-			
+		<?php /*	
 		<nav class="secondary-nav" id="item-browse"> 
 			<?php echo mh_item_browse_subnav();?>
 		</nav>
+		*/
+		?>
 		
 		<div class="pagination top"><?php echo pagination_links(); ?></div>
 		
@@ -75,9 +90,12 @@ echo head(array('maptype'=>$maptype,'title'=>$title,'bodyid'=>'items','bodyclass
 		$index=1; // set index to one so we can use zero as an argument below
 		$showImgNum= 3; // show this many images on the browse results page; used for slider on mobile devices
 		foreach(loop('Items') as $item): 
-			$description = mh_the_text($item,array('snippet'=>250));
+			//$description = mh_the_text($item,array('snippet'=>250));
+			$description = mh_the_text($item);
 			$tags=tag_string(get_current_record('item') , url('items/browse'));
 			$titlelink=link_to_item(metadata($item, array('Dublin Core', 'Title')), array('class'=>'permalink'));
+			$address = metadata($item, array('Item Type Metadata','Street Address'));
+			
 			$hasImage=metadata($item, 'has thumbnail');
 			if ($hasImage){
 					preg_match('/<img(.*)src(.*)=(.*)"(.*)"/U', item_image('fullsize'), $result);
@@ -93,9 +111,28 @@ echo head(array('maptype'=>$maptype,'title'=>$title,'bodyid'=>'items','bodyclass
 				
 				<?php if ($description): ?>
     				<div class="item-description">
-    					<?php echo strip_tags($description); ?>
+    					<?php
+    					$output_desc = ws_rip_tags($description);
+    					if (strlen($output_desc) > 250) {
+    						$output_desc = substr($output_desc,0,250);
+
+							//trim off last word, since it may be a fragment
+    						$last_space = strrpos($output_desc, ' ');
+    						if ($last_space) {
+    							$output_desc = substr($output_desc, 0, $last_space);
+    						}
+    						$output_desc .= "...";
+    					}
+    					echo $output_desc;
+    					?>
+
+						<?php if ($address):?>
+						<p>Street address: <?php echo $address; ?></p>
+						<?php endif; ?>
+
     				</div>
 				<?php endif; ?>
+				
 
 				<div class="item-meta-browse">
 					<?php if (metadata($item, 'has tags') ): ?>

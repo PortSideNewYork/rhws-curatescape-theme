@@ -8,7 +8,7 @@ $bodyclass='browse';
 $maptype='focusarea';
 
 if ( (isset($tag) || isset($tags)) && !isset($query) ) {
-	$title = __('Articles tagged "%s"',($tag ? $tag : $tags));
+	$title = __('Features tagged "%s"',($tag ? $tag : $tags));
 	$bodyclass .=' queryresults';
 	$maptype='queryresults';
 }
@@ -23,7 +23,7 @@ elseif (isset($query)) {
 	$maptype='queryresults';
 }	
 else{
-	$title = __('All Articles');
+	$title = __('All Features');
 	$bodyclass .=' items stories';
 }	
 echo head(array('maptype'=>'none','title'=>$title,'bodyid'=>'items','bodyclass'=>$bodyclass)); 
@@ -43,7 +43,7 @@ echo head(array('maptype'=>'none','title'=>$title,'bodyid'=>'items','bodyclass'=
 			
 
 	<?php if (count($exhibits) > 0): ?>
-	
+		<?php /*	
 		<nav class="secondary-nav" id="item-browse"> 
 		    <?php echo nav(array(
 		        array(
@@ -55,10 +55,12 @@ echo head(array('maptype'=>'none','title'=>$title,'bodyid'=>'items','bodyclass'=
 		            'uri' => url('exhibits/tags')
 		        )
 		    )); ?>
-		</nav>    
+		</nav> 
     
 	
     <div class="pagination"><?php echo pagination_links(); ?></div>
+		*/
+		?>
 	
     <div id="exhibits">	
 		<?php $exhibitCount = 0; ?>
@@ -85,7 +87,7 @@ echo head(array('maptype'=>'none','title'=>$title,'bodyid'=>'items','bodyclass'=
     <div class="pagination"><?php echo pagination_links(); ?></div>
 
     <?php else: ?>
-	<p><?php echo __('There are no articles available yet.'); ?></p>
+	<p><?php echo __('There are no features available yet.'); ?></p>
 	<?php endif; ?>
 
 

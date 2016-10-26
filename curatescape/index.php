@@ -24,7 +24,7 @@ echo head(array('maptype'=>'focusarea','bodyid'=>'home','bodyclass'=>$classname)
 <div id="content" role="main">
 <article id="homepage">
 										
-	<section id="about"><?php echo mh_home_about();?></section>
+	<section id="about"><?php echo mh_home_about(725);?></section>
 
 	<?php echo homepage_widget_sections();?>
 

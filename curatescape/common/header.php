@@ -25,7 +25,7 @@ isset($file) ? $file : $file=null;
 
 <!-- FB Open Graph stuff -->
 <meta property="og:title" content="<?php echo mh_seo_pagetitle($title,$item); ?>"/>
-<meta property="og:image" content="<?php echo mh_seo_pageimg($item,$file);?>"/>
+<meta property="og:image" content="<?php echo img('RHWSlogo.jpg');?>">
 <meta property="og:site_name" content="<?php echo option('site_title');?>"/>
 <meta property="og:description" content="<?php echo mh_seo_pagedesc($item,$tour,$file); ?>"/>
 
@@ -33,7 +33,8 @@ isset($file) ? $file : $file=null;
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="<?php echo mh_seo_pagetitle($title); ?>">
 <meta name="twitter:description" content="<?php echo mh_seo_pagedesc($item,$tour,$file); ?>">
-<meta name="twitter:image:src" content="<?php echo mh_seo_pageimg($item,$file);?>">
+<meta name="twitter:image:src" content="<?php echo img('RHWSlogo.jpg');?>">
+
 <?php echo ($twitter=get_theme_option('twitter_username')) ?  '<meta name="twitter:site" content="'.$twitter.'"> ' : '';?> 
 <?php echo ($ios=get_theme_option('ios_app_id')) ?  '<meta name="twitter:app:id:iphone" content="'.$ios.'"> ' : '';?> 
 <?php echo ($play=get_theme_option('android_app_id')) ?  '<meta name="twitter:app:id:googleplay" content="'.$play.'"> ' : '';?> 

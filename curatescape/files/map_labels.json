@@ -10,17 +10,17 @@
 },
 {
 	"lat": 40.676500,
-	"lon": -74.019000,
+	"lon": -74.020000,
 	"name": "Pier 41"
 },
 {
 	"lat": 40.672400,
-	"lon": -74.019400,
+	"lon": -74.019000,
 	"name": "Beard Street Pier"
 },
 {
-	"lat": 40.677500,
-	"lon": -74.022900,
-	"name": "<span style='text-shadow:initial;display:block;white-space:normal;padding:2px;color:darkblue;background:burlywood;font-size:145%;width:75%;text-align:center;'><a href='/tours/show/9' title='Resiliency'>Click for Resiliency: Flood Prep</a></span>"
+	"lat": 40.6752,
+	"lon": -74.0184,
+	"name": "<span style='text-shadow:initial;display:block;white-space:normal;padding:2px;color:darkblue;background:burlywood;font-size:145%;width:75%;text-align:center;'><a href='/tours/show/9' title='Resiliency'>Resiliency: Flood Prep</a></span>"
 }
 ]

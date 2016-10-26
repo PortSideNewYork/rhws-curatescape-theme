@@ -167,6 +167,7 @@ function random_item_link($text=null,$class='show'){
 function mh_global_header($html=null){
 	$html.= '<div id="mobile-menu-button"><a class="icon-reorder"><span class="visuallyhidden"> '.__('Menu').'</span></a></div>';
 	$html.= link_to_home_page(mh_the_logo(),array('class'=>'home-link'));
+	/*
 	$html.= "<div style='font-size: x-small;
 			display:inline-block; position:absolute; margin-top:1.0em; height: 95px; width:75px;
 			text-align: center; color: #900; line-height: normal;'>";
@@ -174,7 +175,7 @@ function mh_global_header($html=null){
 	$html.= "a project of ";
 	$html.= "<img src='" . img('portsidelogo.png') . "' style='height:60px;'>";
 	$html.= "</div>";
-			
+	*/		
 	$html.= '<div class="menu" role="menu">'
 			//. '<div class="search-forms">'
 			. mh_simple_search($formProperties=array('id'=>'header-search'))
@@ -473,6 +474,8 @@ function mh_display_map($type=null,$item=null,$tour=null){
 			var carto = L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{retina}.png', {
 			    attribution: '<a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> | <a href="https://cartodb.com/attributions">CartoDB</a>',
 			    retina: (L.Browser.retina) ? '@2x' : '',
+				maxNativeZoom: 18,
+				maxZoom: 21
 			});
 			var openstreet = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 			    attribution: '<a href="http://www.marinetraffic.com">MarineTraffic</a>, <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
@@ -485,7 +488,7 @@ function mh_display_map($type=null,$item=null,$tour=null){
 
 			// Build the base map
 			var map = L.map('map_canvas',{
-				layers: openstreet,
+				layers: carto,
 				minZoom: 12,
 				maxZoom: 21,
 				scrollWheelZoom: false,
@@ -508,18 +511,24 @@ function mh_display_map($type=null,$item=null,$tour=null){
     		layers: 'rhws:12334pyramid3',
         	format: 'image/png',
             transparent: true,
-            zIndex: 3
+            zIndex: 3,
+		    maxNativeZoom: 18,
+		    maxZoom: 21
+        
                 });
 
             noaaMap.addTo(map);
             //---end adding NOAA map------
 
+            var baseLayers = {
+            		"Street":carto,
+            		"Detailed Street":openstreet
+            	};
+        	var numBaseLayers = 2;
             
             //Add a contol to toggle on/off overlays
             var mapControl = L.control.layers(
-                    {
-                		"Street":openstreet
-                	}, 
+					baseLayers,
 					null, 
 					{ 
     					collapsed: true,
@@ -531,11 +540,14 @@ function mh_display_map($type=null,$item=null,$tour=null){
 			var selectedOverlays = Cookies.getJSON('selectedoverlays');
 
             // Save selected layers in session cookie
-            function setSelectedLayersCookie(type, e) {
+            function setSelectedLayersCookie(actiontype, e) {
+
+            	if (type == 'queryresults') { return;}
+            	
 				var overlays = document.getElementsByClassName('leaflet-control-layers-selector');
 				var selected = [];
-				//skip #0 - it's the map base layer
-				for (var i = 1; i < overlays.length; i++) {
+				//skip map base layer(s)
+				for (var i = numBaseLayers; i < overlays.length; i++) {
 					if (overlays[i].checked) {
 						selected.push(i);
 					}
@@ -579,11 +591,12 @@ function mh_display_map($type=null,$item=null,$tour=null){
 							//disableClusteringAtZoom: clusterIntensity,
 							//spiderfyOnMaxZoom:true,
 							maxClusterRadius:45, //default is 80 pixels
-							polygonOptions: {
+							/*polygonOptions: {
 								'stroke': false,
 								'color': '#000',
 								'fillOpacity': .1
-							}
+							},*/
+							showCoverageOnHover:false
 						});
 
 						markers.addTo(map);
@@ -1002,7 +1015,7 @@ function mh_display_map($type=null,$item=null,$tour=null){
 							if (selectedOverlays) {
 								//if a cookie with previously selected, use it
 								for (var i = 0; i < selectedOverlays.length; i++) {
-									var whichone = selectedOverlays[i];
+									var whichone = selectedOverlays[i] - 1;
 									$('.leaflet-control-layers-overlays label:nth-child(' + whichone + ') div input').click();
 								}
 					        }
@@ -2522,14 +2535,15 @@ function mh_home_about($length=530,$html=null){
 		$html .= '<article>';
 			
 			$html .= '<header>';
-				$html .= '<h2>'.option('site_title').'</h2>';
+				/*$html .= '<h2>'.option('site_title').'</h2>';*/
 				$html .= '<span class="find-us">'.__('A project by %s', mh_owner_link()).'</span>';
 			$html .= '</header>';
 		
 			$html .= '<div class="about-main">';
 				$html .= substr(mh_about(),0,$length);
 				$html .= ($length < strlen(mh_about())) ? '...' : null;
-				$html .= '<p class="view-more-link"><a href="'.url('about').'">'.__('Read more <span>About Us</span>').'</a></p>';
+				$html .= '<p class="view-more-link"><a href="'.url('about').'">'.__('More <span>about this site</span>').'</a></p>';
+				$html .= '<p class="get-started">Click map to activate it</p>';
 			$html .= '</div>';
 	
 		$html .= '</article>';
@@ -3234,6 +3248,27 @@ function ws_get_collections_index() {
 
 	echo "</script>\n";
 	
+}
+
+/** Alternative to strip_tags that instead replaces tags with spaces.
+ * Copied from a comment in http://php.net/manual/en/function.strip-tags.php.
+ * Made a little safer by requiring tag to start with a letter, and also
+ * changed pattern to be non-greedy.
+ */
+function ws_rip_tags($string) {
+
+	// ----- remove HTML TAGs -----
+	$string = preg_replace('/<\/?[a-zA-Z][^>]*?>/', ' ', $string);
+
+	// ----- remove control characters -----
+	$string = str_replace("\r", ' ', $string);    // --- replace with empty space
+	$string = str_replace("\n", ' ', $string);   // --- replace with space
+	$string = str_replace("\t", ' ', $string);   // --- replace with space
+
+	// ----- remove multiple spaces -----
+	$string = trim(preg_replace('/ {2,}/', ' ', $string));
+
+	return $string;
 }
 
 ?>

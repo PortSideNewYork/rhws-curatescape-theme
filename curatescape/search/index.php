@@ -27,13 +27,14 @@ echo head(array('maptype'=>$maptype,'title'=>$title,'bodyid'=>'search','bodyclas
 
 	<div id="primary" class="browse">
 	<section id="results">
-			
+		<?php /*	
 		<nav class="secondary-nav" id="item-browse"> 
 			<?php echo mh_item_browse_subnav();?>
 		</nav>
 		
 		<div class="pagination top"><?php echo pagination_links(); ?></div>
-		
+		*/
+		?>
 		<?php echo search_filters(); ?>
 		
 		<?php if ($total_results): ?>

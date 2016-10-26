@@ -39,7 +39,9 @@ echo head( array( 'maptype'=>'tour','title' => ''.$label.' | '.$tourTitle, 'cont
 		</section>
 		   
 		<section id="tour-items">
+		<!-- 
 			<h3 class="locations"><?php echo __('Locations for %s', $label);?></h3>
+		 -->	
 	         <?php 
 	         $i=1;
 	         foreach( $tour->getItems() as $tourItem ): 
@@ -51,7 +53,8 @@ echo head( array( 'maptype'=>'tour','title' => ''.$label.' | '.$tourTitle, 'cont
 	         	$hasImage=metadata($tourItem,'has thumbnail');
 	         ?>
 		         <article class="item-result <?php echo $hasImage ? 'has-image' : null;?>">
-			         <h3><a class="permalink" href="<?php echo url('/') ?>items/show/<?php echo $itemID.'?tour='.tour( 'id' ).'&index='.($i-1).''; ?>"><?php echo '<span class="number">'.$i.'</span>';?> 
+			         <h3><a class="permalink" href="<?php echo url('/') ?>items/show/<?php echo $itemID.'?tour='.tour( 'id' ).'&index='.($i-1).''; ?>">
+			         <?php /* echo '<span class="number">'.$i.'</span>'; */?> 
 			         <?php echo metadata( $tourItem, array('Dublin Core', 'Title') ); ?>
 			         </a></h3>
 
