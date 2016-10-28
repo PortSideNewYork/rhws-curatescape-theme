@@ -70,20 +70,21 @@ if ($uploaded_stylesheet=get_theme_option('custom stylesheet')){
 <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
 
 <!-- new 7/25 -->
-<link rel="stylesheet" href="https://npmcdn.com/leaflet@1.0.0-rc.3/dist/leaflet.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.1/dist/leaflet.css" />
+<!-- 
 <style type="text/css">
   .leaflet-pane {
     z-index: inherit;
   }
 </style>
- 
-<script src="https://npmcdn.com/leaflet@1.0.0-rc.3/dist/leaflet.js"></script>
+ -->
+<script src="https://unpkg.com/leaflet@1.0.1/dist/leaflet.js"></script>
  
 <?php if(get_theme_option('clustering')):?>
 <!-- new 7/25 -->
-<link rel="stylesheet" href="https://cdn.rawgit.com/Leaflet/Leaflet.markercluster/v1.0.0-beta.2.0/dist/MarkerCluster.css" />
-<link rel="stylesheet" href="https://cdn.rawgit.com/Leaflet/Leaflet.markercluster/v1.0.0-beta.2.0/dist/MarkerCluster.Default.css" />
-<script src="https://cdn.rawgit.com/Leaflet/Leaflet.markercluster/v1.0.0-beta.2.0/dist/leaflet.markercluster-src.js"></script>
+<link rel="stylesheet" href="https://cdn.rawgit.com/Leaflet/Leaflet.markercluster/v1.0.0/dist/MarkerCluster.css" />
+<link rel="stylesheet" href="https://cdn.rawgit.com/Leaflet/Leaflet.markercluster/v1.0.0/dist/MarkerCluster.Default.css" />
+<script src="https://cdn.rawgit.com/Leaflet/Leaflet.markercluster/v1.0.0/dist/leaflet.markercluster-src.js"></script>
 
 <script src="https://cdn.rawgit.com/ghybs/Leaflet.FeatureGroup.SubGroup/v1.0.0/dist/leaflet.featuregroup.subgroup-src.js"></script>
 <?php endif;

@@ -422,13 +422,7 @@ function mh_display_map($type=null,$item=null,$tour=null){
 		$marker='/themes/curatescape/images/marker.png';
 	}
 ?>
-<!-- 
-<h3>WEB_ROOT is <?php echo WEB_ROOT; ?></h3>
-<h3>REQUEST_URI is <?php echo $_SERVER['REQUEST_URI']; ?></h3>
- -->
-		<script type="text/javascript">
-
-
+	<script type="text/javascript">
 		
 		var type =  '<?php echo $type ;?>';
 		var color = '<?php echo $color ;?>';
@@ -454,7 +448,6 @@ function mh_display_map($type=null,$item=null,$tour=null){
 
 		jQuery(document).ready(function() {
 
-			
 			if ((getChromeVersion()>=50 && !isSecure) || !navigator.geolocation){
 				// Hide the geolocation button on insecure sites for Chrome 50+ users and for browsers with no support
 				jQuery('.map-actions a.location').addClass('hidden');
@@ -508,14 +501,13 @@ function mh_display_map($type=null,$item=null,$tour=null){
 			// was rhws:noaa_rnc_12334
 
            var noaaMap = L.tileLayer.wms("https://redhookwaterstories.org/geoserver/wms", {
-    		layers: 'rhws:12334pyramid3',
-        	format: 'image/png',
-            transparent: true,
-            zIndex: 3,
-		    maxNativeZoom: 18,
-		    maxZoom: 21
-        
-                });
+    			layers: 'rhws:12334pyramid3',
+        		format: 'image/png',
+            	transparent: true,
+            	zIndex: 5,
+		    	maxNativeZoom: 18,
+		    	maxZoom: 21
+		    });
 
             noaaMap.addTo(map);
             //---end adding NOAA map------
@@ -531,8 +523,8 @@ function mh_display_map($type=null,$item=null,$tour=null){
 					baseLayers,
 					null, 
 					{ 
-    					collapsed: true,
-    					hideSingleBase: true
+    					collapsed:true,
+    					hideSingleBase:true
     				}
 			);
 
@@ -564,7 +556,7 @@ function mh_display_map($type=null,$item=null,$tour=null){
 			// Center marker and popup on open
 			map.on('popupopen', function(e) {
 				// find the pixel location on the map where the popup anchor is
-			    var px = map.project(e.popup._latlng); 
+			    var px = map.project(e.popup._latlng);
 			    // find the height of the popup container, divide by 2, subtract from the Y axis of marker location
 			    px.y -= e.popup._container.clientHeight/2;
 			    // pan to new center
@@ -675,8 +667,8 @@ function mh_display_map($type=null,$item=null,$tour=null){
 								myMarkerSize = 'l'; //options are s, m, l
 							}
 						}
-												
-				        if(typeof(item.thumbnail)!="undefined"){
+
+						if(typeof(item.thumbnail)!="undefined"){
 					        var image = '<a href="<?php echo WEB_ROOT;?>/items/show/'+item.id+'" class="curatescape-infowindow-image '+(!item.thumbnail ? 'no-img' : '')+'" style="background-image:url('+item.thumbnail+');"></a>';
 					    }else{
 						    var image = '';
@@ -809,8 +801,8 @@ function mh_display_map($type=null,$item=null,$tour=null){
 							var mtMoreInfo = "";
 							if (mtvinfo['MMSI'] != 0) {
 								mtMoreInfo = 
-			            		       ". More details on this vessel at <span id='mtlink'><a target='_blank' href='http://www.marinetraffic.com/en/ais/details/ships/mmsi:"
-			            		       + mtvinfo['MMSI'] + "'>" + mtShipName + "</a></span>";
+			            		       "<span id='mtlink'><a target='_blank' href='http://www.marinetraffic.com/en/ais/details/ships/mmsi:"
+			            		       + mtvinfo['MMSI'] + "'>see more about " + mtShipName + "</a></span>";
 							}
 
 							//Make sure these appear under other markers using zIndexOffset
@@ -821,19 +813,20 @@ function mh_display_map($type=null,$item=null,$tour=null){
 		            		       }
 		            		     )
 		            		     .bindPopup(
-				            		     "<div class='mt-div-popup'>"
+				            		     "<div class='mt-div-popup'><strong>"
 		            		       + mtShipName 
 		            		       + " ("
 		            		       + mtFlag 
 		            		       + " " + mtShipType
-		            		       + ")"
-		            		       //+ ", MMSI:" + mtvinfo['MMSI'] 
-		            		       + " course  " + mtvinfo['COURSE'] + "&#x00b0;" 
-		            		       + " at " + mtvinfo['SPEED']/10 + " kts" 
-		            		       + "<br/>Data received " + mtDate.toLocaleString()
-		            		       + "<div class='mt-credit'>"
-		            		       + "data courtesy <span id='mtlink'><a href='http://www.marinetraffic.com' target='_blank'>MarineTraffic</a></span>"
+		            		       + ")</strong>"
+		            		       + "<div style='margin-left:.5em;font-variant:normal;'>"
 		            		       + mtMoreInfo
+		            		       //+ ", MMSI:" + mtvinfo['MMSI'] 
+		            		       + "<br/><strong>Course  " + mtvinfo['COURSE'] + "&#x00b0;" 
+		            		       + " at " + mtvinfo['SPEED']/10 + " knots</strong>" 
+		            		       + "<br/><span style='font-style:italic;font-size:90%;'>Data rec'd " + mtDate.toLocaleString()
+		            		       + "<br/>courtesy of <span id='mtlink'><a href='http://www.marinetraffic.com' target='_blank'>MarineTraffic</a></span>"
+									+ "</span>"
 		            		       + "</div>"
 		            		       + "</div>"
 		            		      );
@@ -1047,20 +1040,28 @@ function mh_display_map($type=null,$item=null,$tour=null){
 			        
 			        
 				}else{ // single items
-					map.setView([data.latitude,data.longitude],zoom+3);	
 			        var address = data.address ? data.address : data.latitude+','+data.longitude;
 			        var accessInfo=(data.accessinfo === true) ? '<a class="access-anchor" href="#access-info"><span class="icon-exclamation-circle" aria-hidden="true"></span> Access Information</a>' : '';
 
-			        var image = (typeof(data.thumbnail)!="undefined") ? '<a href="#item-media" class="curatescape-infowindow-image '+(!data.thumbnail ? 'no-img' : '')+'" style="background-image:url('+data.thumbnail+');"></a>' : '';
+			        //Skip image if not defined or null
+			        var image = (typeof(data.thumbnail)!="undefined" && data.thumbnail) ? '<a href="#item-media" class="curatescape-infowindow-image '+(!data.thumbnail ? 'no-img' : '')+'" style="background-image:url('+data.thumbnail+');"></a>' : '';
+
+			        //offset marker location by a bit if image exists
+			        var offset = .0004;
+			        if (!image) { offset = 0; }
 
 			        var html = image+'<div class="curatescape-infowindow-address single-item"><span class="icon-map-marker" aria-hidden="true"></span> '+address.replace(/(<([^>]+)>)/ig,"")+accessInfo+'</div>';
 					
-					var marker = L.marker([data.latitude,data.longitude],{icon: icon(color,"circle")}).bindPopup(html);					
-					
+					var marker = L.marker([data.latitude,data.longitude],{icon: icon(color,"circle")}).bindPopup(html);
+
 					marker.addTo(map).bindPopup(html);
+
 					if(jQuery('body').hasClass('big')) marker.openPopup();
+
+					//Shift down just a little so whole pop-up fits on map
+					map.setView([data.latitude+offset,data.longitude],zoom+3);
+
 					mapBounds = map.getBounds();
-					
 				}
 				
 			}		
@@ -1068,7 +1069,6 @@ function mh_display_map($type=null,$item=null,$tour=null){
 			if(type=='story'){
 				var data = jQuery.parseJSON(source);
 				addMarkers(data);
-				
 			}else if(type=='tour'){
 				var data = jQuery.parseJSON(source);
 				addMarkers(data);
@@ -1149,7 +1149,7 @@ function mh_display_map($type=null,$item=null,$tour=null){
 					}, 
 					options);
 			});
-
+										
 		});
         </script>
 
