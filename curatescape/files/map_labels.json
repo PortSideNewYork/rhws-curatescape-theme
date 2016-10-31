@@ -2,7 +2,17 @@
 	"lat": 40.6700095,
 	"lon": -74.0129394,
 	"name": "IKEA Pier A"
-}, 
+},
+{
+	"lat": 40.685055,
+	"lon": -74.010817,
+	"name": "Pier 10"
+},
+{
+	"lat": 40.682139,
+	"lon": -74.015452,
+	"name": "Pier 12"
+},
 {
 	"lat": 40.678301,
 	"lon": -74.019500,
@@ -14,13 +24,13 @@
 	"name": "Pier 41"
 },
 {
-	"lat": 40.672400,
-	"lon": -74.019000,
+	"lat": 40.672268,
+	"lon": -74.018966,
 	"name": "Beard Street Pier"
 },
 {
 	"lat": 40.6752,
-	"lon": -74.0184,
-	"name": "<span style='text-shadow:initial;display:block;white-space:normal;padding:2px;color:darkblue;background:burlywood;font-size:145%;width:75%;text-align:center;'><a href='/tours/show/9' title='Resiliency'>Resiliency: Flood Prep</a></span>"
+	"lon": -74.01835,
+	"name": "<span style='text-shadow:initial;display:block;white-space:normal;padding:2px 2px 5px 2px;background:darkblue;border-radius:5px;font-size:140%;width:75%;text-align:center;'><a href='/tours/show/9' title='Resiliency' style='color:wheat;'>Resiliency: flood prep</a></span>"
 }
 ]

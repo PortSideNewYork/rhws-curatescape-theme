@@ -3,6 +3,7 @@ $tag = (isset($_GET['tag']) ? $_GET['tag'] : null); // items --> browse
 $tags = (isset($_GET['tags']) ? $_GET['tags'] : null); // tags/items --> show
 $subj = ( (isset($_GET['advanced'][0]['element_id']) && $_GET['advanced'][0]['element_id'] == 49 )  ? $_GET['advanced'][0]['terms'] : null );
 $auth= ( (isset($_GET['advanced'][0]['element_id']) && $_GET['advanced'][0]['element_id'] == 39 )  ? $_GET['advanced'][0]['terms'] : null );
+$pagetitle= ( (isset($_GET['title']))  ? $_GET['title'] : null );
 $business= ( (isset($_GET['advanced'][0]['element_id']) && $_GET['advanced'][0]['element_id'] == 101 )  ? $_GET['advanced'][0]['terms'] : null );
 if (!$business) {
 	//$_GET['advanced'][0]['type'] should be 'is+empty', but test isn't working now
@@ -30,12 +31,22 @@ elseif ( !empty($auth) ) {
 	$maptype='queryresults';
 }
 elseif ($query) {
-	$title = __('Search Results for "%s"', $query);
+	if (!empty($pagetitle)) {
+		$title = $pagetitle;
+	}
+	else {
+		$title = __('Search Results for "%s"', $query);
+	}
 	$bodyclass .=' queryresults';
 	$maptype='queryresults';
 }	
 elseif ($business) {
-	$title = __('Search Results for "%s"', $business);
+	if (!empty($pagetitle)) {
+		$title = $pagetitle;
+	}
+	else {
+		$title = __('Search Results for "%s"', $business);
+	}
 	$bodyclass .=' queryresults';
 	$maptype='queryresults';
 }	
@@ -56,7 +67,7 @@ echo head(array('maptype'=>$maptype,'title'=>$title,'bodyid'=>'items','bodyclass
 <section class="browse stories items">	
 	<?php 
 	/* Show results summary if coming from a search or from subject browse */
-		if( !empty($subj) ||
+		if( !empty($subj) || !empty($pagetitle) ||
 			isset($_GET['sort_field']) && $_GET['sort_field'] == 'relevance'):
 	?>
 
@@ -65,6 +76,7 @@ echo head(array('maptype'=>$maptype,'title'=>$title,'bodyid'=>'items','bodyclass
 	echo $title; 
 	?></h2>
 	<?php endif;?>
+	
 	
 	<?php 
 		/*Only show alternate search hints if coming from a search */

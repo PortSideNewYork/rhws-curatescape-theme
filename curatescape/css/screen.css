@@ -842,6 +842,13 @@ div#item-relations-display-item-relations th, td {
     line-height: normal;
 	text-shadow: 0.5px 0.5px grey;
 }
+.mta-bus-popup .leaflet-popup-content-wrapper {
+	padding:5px;
+	font-size:small;
+	font-variant:small-caps;
+	font-family:"Droid Serif","Georgia","Times","Times New Roman",serif;
+}
+
 .my-div-icon-name {
     position:absolute;
     bottom:100%;
@@ -857,12 +864,12 @@ div#item-relations-display-item-relations th, td {
 /* display marine traffic data */
 .mt-div-icon {
   /*white-space:nowrap;*/
-  color: #003cb3;
-  font-family: "Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
-  font-weight: normal;
-  font-style: normal;
-  font-size: 60%;
-  line-height: 100%;
+  color:#003cb3;
+  font-family:"Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
+  font-weight:normal;
+  font-style:normal;
+  font-size:60%;
+  line-height:100%;
   text-align:center;
 }
 .mt-div-icon-name {

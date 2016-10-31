@@ -921,6 +921,8 @@ function mh_display_map($type=null,$item=null,$tour=null){
 				        	          }
 				        	      ).bindPopup(
 				        	                  stopRoutes + " bus stop headed " + businfo['direction']
+				        	                  + "<br/>" + "<a target='_blank' href='https://bustime.mta.info/m/?q=" + businfo['code'] + "'>See MTA Bus Time&#xa9; for this stop</a>",
+				        	                  {className:"mta-bus-popup"}
 				        	      );
 
 				        	     stopAdded[businfo['id']] = 'y';
@@ -1169,7 +1171,7 @@ function mh_map_actions($item=null,$tour=null,$saddr='current',$coords=null){
 		$street_address=null;
 
 		$show_map = true;
-	
+
 		if($item!==null){
 			
 			// get the destination coordinates for the item
@@ -1206,8 +1208,8 @@ function mh_map_actions($item=null,$tour=null,$saddr='current',$coords=null){
 		}
 	
 	?>
-
 	<?php if ($show_map): ?>
+
 	<div class="map-actions clearfix">
 		
 
@@ -2254,8 +2256,11 @@ function mh_tags(){
 function mh_official_website($item='item'){
 
 	if (element_exists('Item Type Metadata','Official Website')){
-		$website=metadata($item,array('Item Type Metadata','Official Website'));
-		return $website ? '<h3>'.__('Official Website: ').'</h3>'.$website : null;	
+		$websites=metadata($item,array('Item Type Metadata','Official Website'),'all');
+		$retval = '<h3>'.__('Official Website: ').'</h3>';
+		$retval .= join(', ', $websites);
+		
+		return $retval;
 	} 
 
 }
@@ -2267,11 +2272,13 @@ function mh_street_address($item='item',$formatted=true){
 
 	if (element_exists('Item Type Metadata','Street Address')) {
 		$address=metadata($item,array('Item Type Metadata','Street Address'));
-		$map_link='<a target="_blank" href="https://maps.google.com/maps?saddr=current+location&daddr='.urlencode($address).'">map</a>';
+		$search_address = $address;
+		if (!strpos($search_address, "11231")) {
+			$search_address .= " 11231";
+		}
+		$map_link='<a target="_blank" href="https://maps.google.com/maps?saddr=current+location&daddr='.urlencode($search_address).'">map</a>';
 		return $address ? ( $formatted ? '<h3>'.__('Street Address: ').'</h3>'.$address.' ['.$map_link.']' : $address ) : null;	
-	} 
-
-	
+	}
 }
 
 /*
@@ -2543,7 +2550,7 @@ function mh_home_about($length=530,$html=null){
 				$html .= substr(mh_about(),0,$length);
 				$html .= ($length < strlen(mh_about())) ? '...' : null;
 				$html .= '<p class="view-more-link"><a href="'.url('about').'">'.__('More <span>about this site</span>').'</a></p>';
-				$html .= '<p class="get-started">Click map to activate it</p>';
+				$html .= '<p class="get-started">Click empty spot on map to activate it</p>';
 			$html .= '</div>';
 	
 		$html .= '</article>';
