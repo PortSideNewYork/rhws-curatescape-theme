@@ -778,18 +778,22 @@ function mh_display_map($type=null,$item=null,$tour=null){
 	            		    var mtShipName = mtvinfo['SHIPNAME'] ? mtvinfo['SHIPNAME'] : "UNKNOWN VESSEL";
 	            		     
 	            		    var mtFlag = mtvinfo['FLAG'] ? mtvinfo['FLAG'] : "";
-	            		     
-	            		    
+
+	            		    //show as arrow if moving; diamond if stationary
+	            		    var mtIconShape;
+	            		    if (mtvinfo['SPEED'] <= 1) {
+		            		    //less than 0.1kt
+		            		    mtIconShape = "transform: rotate(45deg) scale(2,2);'>&#x25a0;"; //square
+	            		    }
+	            		    else {
+		            		    mtIconShape = "transform: rotate(" + mtvinfo['COURSE'] + "deg) scale(1,2) ;'>&#x25b2;"; //triangle
+	            		    }
 			            		
 							var myicon = L.divIcon({
            					 html: "<span class='mt-div-icon-name'>"
            					 + mtShipName + "</span>"
            					 + "<span class='mt-div-icon-shape' style='"
-           					 + "transform: rotate(" + mtvinfo['COURSE'] + "deg) scale(1,2) ;'>&#x25b2;"
-           					 //+ "<span class='mt-div-icon-wake' style='font-size:"
-           					 //+ mtvinfo['LENGTH']/.5 + "%"
-           					 //+ ";'>&#x2261;"
-           					 //+ "</span>"
+           					 + mtIconShape
            					 + "</span>"
            					 ,
            					 className: "mt-div-icon"
