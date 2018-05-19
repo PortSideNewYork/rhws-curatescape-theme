@@ -122,31 +122,9 @@ echo head_js(false); // <-- No to Omeka default scripts
 </header>
 
 <div id="wrap">
-<?php 
-/**
- * Want hero to show map & top image
- * if location & image - hero + mh_which_content
- * if location but no image - hero + mh_which_content
- * if no location but image
- * if no location and no image - nothing
- */
-?>
-    <?php if(isset($maptype) && $maptype != 'none'): 
-    /* Has location */
-    ?>
+
+    <?php if(isset($maptype) && $maptype != 'none'): ?>
 	<figure id="hero">
 		<?php echo mh_which_content($maptype,$item,$tour); ?>	
 	</figure>
-
-	<?php elseif (isset($item) && metadata($item, 'has thumbnail')):
-	/*No location but has image */
-		preg_match('/<img(.*)src(.*)=(.*)"(.*)"/U', item_image('fullsize', $item), $result);
-		$item_image = array_pop($result);
-	?>
-	<figure id="hero" style="background-image: url('<?php echo $item_image; ?>')">
-	
-	</figure>
-	<?php /* empty bar across screen for consistency*/?>
-	<div class="map-actions clearfix" style="height:45px;">
-	</div>
 	<?php endif; ?>

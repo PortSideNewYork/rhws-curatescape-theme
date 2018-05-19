@@ -38,6 +38,7 @@ echo head(array('maptype'=>$maptype,'title'=>$title,'bodyid'=>'search','bodyclas
 		<?php echo search_filters(); ?>
 		
 		<?php if ($total_results): ?>
+		<?php /*
 		<table id="search-results">
 		    <thead>
 		        <tr>
@@ -59,6 +60,59 @@ echo head(array('maptype'=>$maptype,'title'=>$title,'bodyid'=>'search','bodyclas
 		        <?php endforeach; ?>
 		    </tbody>
 		</table>
+		*/ ?>
+		
+			<?php foreach (loop('search_texts') as $searchText):
+                $record_type = $searchText['record_type'];			
+		        $record = get_record_by_id($record_type, $searchText['record_id']);
+		        $titlelink = "<a href='"
+                    .record_url($record, 'show')
+                    ."'>"
+                    .($searchText['title'] ? $searchText['title'] : '[Unknown]')
+                    ."</a>";
+		        $hasImage = false;
+		        unset ($item_image);
+		        if ($record_type == 'Item') {
+	       	          $hasImage=metadata($record, 'has thumbnail');
+			          if ($hasImage){
+				       	preg_match('/<img(.*)src(.*)=(.*)"(.*)"/U', record_image($record, 'fullsize'), $result);
+					   $item_image = array_pop($result);				
+    			     }
+		        }
+		        
+		        $index = 0; ?>
+				<!-- <article class="item-result <?php echo $hasImage ? 'has-image' : null;?>" id="item-result-<?php echo $index;?>"> -->
+				<article class="item-result <?php echo $hasImage ? 'has-image' : null;?>">
+					<h3><?php echo $titlelink; ?></h3>
+					<?php echo isset($item_image) ? link_to($record, 'show', '<span class="item-image" style="background-image:url('.$item_image.');"></span>') : null; ?>
+					<?php 
+					if ($searchText['record_type'] == 'Item'):
+						$description = mh_the_text($record);
+						if ($description): ?>
+    						<div class="item-description">
+    						<?php
+    					   $output_desc = ws_rip_tags($description);
+    					   if (strlen($output_desc) > 250) {
+    						  $output_desc = substr($output_desc,0,250);
+
+    							//trim off last word, since it may be a fragment
+        						$last_space = strrpos($output_desc, ' ');
+    	   					    if ($last_space) {
+    		  					   $output_desc = substr($output_desc, 0, $last_space);
+    						    }
+    						     $output_desc .= "...";
+    					   }
+        				    echo $output_desc;
+    					  ?>
+						</div>
+					<?php endif; ?>					
+					
+					
+					<?php endif; ?>					
+				</article>
+			
+		    <?php endforeach; ?>
+		
 		
 		<?php else: ?>
 		<div id="no-results">

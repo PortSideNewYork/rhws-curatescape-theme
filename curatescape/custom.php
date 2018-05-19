@@ -50,7 +50,10 @@ function mh_seo_pageimg($item=null,$file=null){
 function mh_theme_css($media='all'){
 	$themeName = Theme::getCurrentThemeName();
 	$theme = Theme::getTheme($themeName);
-	return '<link href="'.WEB_PUBLIC_THEME.'/'.$themeName.'/css/screen.css?v='.$theme->version.'" media="'.$media.'" rel="stylesheet" type="text/css" >';
+	$testingString = "";
+	//$testingString = "".time();
+	return '<link href="'.WEB_PUBLIC_THEME.'/'.$themeName.'/css/screen.css?v='.$theme->version
+	   .$testingString.'" media="'.$media.'" rel="stylesheet" type="text/css" >';
 }
 
 function mh_item_label_option($which=null){
@@ -224,20 +227,23 @@ function mh_get_tour_json($tour=null){
 		if($tour){
 			
 			$tourItems=array();
+			$itemNo = 0;
 			
 			foreach($tour->Items as $item){
+			    $itemNo += 1;
 				$location = get_db()->getTable( 'Location' )->findLocationByItem( $item, true );
 				$address = ( element_exists('Item Type Metadata','Street Address') ) 
 			? preg_replace( "/\r|\n/", "", strip_tags(metadata( $item, array( 'Item Type Metadata','Street Address' )) )) : null;
-				if($location){
+				if($location) {
 					$tourItems[] = array(
 						'id'		=> $item->id,
 						'title'		=> addslashes(metadata($item,array('Dublin Core','Title'))),
 						'address'	=> addslashes($address),
 						'latitude'	=> $location[ 'latitude' ],
 						'longitude'	=> $location[ 'longitude' ],
+					    'itemNo'    => $itemNo,
 						);
-					}
+				}
 			}
 		    
 			$tourMetadata = array(
@@ -648,7 +654,7 @@ function mh_display_map($type=null,$item=null,$tour=null){
 									}
 	                    	    } //end for
 							} //end if
-
+							var appendQueryParams=(type=='tour') ? '?tour='+data.id+'&index='+item.itemNo : '';
 							var address = item.address ? item.address : '';
 							var c = (item.featured==1 && featured_color) ? featured_color : color;
 							var inner = (item.featured==1 && featuredStar) ? "star" : "circle";
@@ -673,16 +679,34 @@ function mh_display_map($type=null,$item=null,$tour=null){
 					    }else{
 						    var image = '';
 					    }
-					    var number = (type=='tour') ? '<span class="number">'+(i+1)+'</span>' : '';
+ 					    /*var number = (type=='tour') ? '<span class="number">'+(i+1)+'</span>' : '';*/
+					    var number = (type=='tour') ? '<span class="number">'+item.itemNo+'</span>' : '';
 
-					    var html = image+number+'<a class="curatescape-infowindow-title" href="<?php echo WEB_ROOT;?>/items/show/'+item.id+'">'+item.title
-					    +'</a><br>'+'<div class="curatescape-infowindow-address">'+address.replace(/(<([^>]+)>)/ig,"")+'</div>';
+					    var html = image+number
+					    +'<a class="curatescape-infowindow-title" href="<?php echo WEB_ROOT;?>/items/show/'
+					    +item.id+appendQueryParams+'">'
+					    +item.title
+					    +'</a><br>'
+					    +'<div class="curatescape-infowindow-address">'
+					    +address.replace(/(<([^>]+)>)/ig,"")+'</div>';
 						
 						/* Add title as hover, unescaping apostrophes */
 						var marker = L.marker([item.latitude,item.longitude],
 								{icon: icon(c,inner),
 							title: item.title.replace("&#039;", "'")
 							}).bindPopup(html);
+						
+						if (type=='tour') {
+							marker.bindTooltip("<span class='tour-item-label'>" 
+									+ item.itemNo 
+									+ "</span>", 
+									{
+										permanent:true,
+										className:'tour-leaflet-tooltip',
+										direction:'center',
+										offset:[0,20]
+											});
+						}
 						
 						group.push(marker);  //Not used in clustering on?
 						
@@ -1051,9 +1075,11 @@ function mh_display_map($type=null,$item=null,$tour=null){
 
 			        //Skip image if not defined or null
 			        var image = (typeof(data.thumbnail)!="undefined" && data.thumbnail) ? '<a href="#item-media" class="curatescape-infowindow-image '+(!data.thumbnail ? 'no-img' : '')+'" style="background-image:url('+data.thumbnail+');"></a>' : '';
+			        //var image = "";
 
 			        //offset marker location by a bit if image exists
-			        var offset = .0004;
+// 			        var offset = .0004;
+			        var offset = .0010;
 			        if (!image) { offset = 0; }
 
 			        var html = image+'<div class="curatescape-infowindow-address single-item"><span class="icon-map-marker" aria-hidden="true"></span> '+address.replace(/(<([^>]+)>)/ig,"")+accessInfo+'</div>';
@@ -1065,7 +1091,8 @@ function mh_display_map($type=null,$item=null,$tour=null){
 					if(jQuery('body').hasClass('big')) marker.openPopup();
 
 					//Shift down just a little so whole pop-up fits on map
-					map.setView([data.latitude+offset,data.longitude],zoom+3);
+// 					map.setView([data.latitude+offset,data.longitude],zoom+3);
+					map.setView([data.latitude+offset,data.longitude],zoom+1);
 
 					mapBounds = map.getBounds();
 				}
@@ -1215,7 +1242,6 @@ function mh_map_actions($item=null,$tour=null,$saddr='current',$coords=null){
 	<?php if ($show_map): ?>
 
 	<div class="map-actions clearfix">
-		
 
 		<!-- Fullscreen -->
 		<a class="fullscreen"><span class="icon-expand" aria-hidden="true"></span> <span class="label"><?php echo __('Fullscreen Map');?></span><span class="alt"><?php echo __('Map');?></span></a>
@@ -1226,7 +1252,12 @@ function mh_map_actions($item=null,$tour=null,$saddr='current',$coords=null){
 		
 		<!-- Directions link -->
 		<?php
-		$directions_link= ($show_directions==1) ? '<a onclick="jQuery(\'body\').removeClass(\'fullscreen-map\')" class="directions" title="'.__('Get Directions on Google Maps').'" target="_blank" href="https://maps.google.com/maps?saddr='.$saddr.'+location&daddr='.($street_address ? urlencode($street_address) : $coords).'"><span class="icon-external-link-square" aria-hidden="true"></span> <span class="label">'.__('Get Directions').'</span><span class="alt">'.__('Directions').'</span></a> ' : null;	
+		/* Ref at https://developers.google.com/maps/documentation/urls/guide#directions-action */
+		//$directions_link= ($show_directions==1) ? '<a onclick="jQuery(\'body\').removeClass(\'fullscreen-map\')" class="directions" title="'.__('Get Directions on Google Maps').'" target="_blank" href="https://maps.google.com/maps?saddr='.$saddr.'+location&daddr='.($street_address ? urlencode($street_address) : $coords).'"><span class="icon-external-link-square" aria-hidden="true"></span> <span class="label">'.__('Get Directions').'</span><span class="alt">'.__('Directions').'</span></a> ' : null;	
+		$directions_link= ($show_directions==1) ? 
+		  '<a onclick="jQuery(\'body\').removeClass(\'fullscreen-map\')" class="directions" title="'
+	       .__('Get Directions on Google Maps')
+	       .'" target="_blank" href="https://www.google.com/maps/dir/?api=1&travelmode=walking&destination='.($street_address ? urlencode($street_address) : $coords).'"><span class="icon-external-link-square" aria-hidden="true"></span> <span class="label">'.__('Get Directions').'</span><span class="alt">'.__('Directions').'</span></a> ' : null;
 		echo ( $coords && ($item || $tour) ) ? $directions_link : null;	
 		?>
 		
@@ -1248,7 +1279,8 @@ function mh_simple_search($formProperties=array(), $uri = null){
 
 	$itemUrl = 	'items/browse?sort_field=relevance';
 	$sitewideUrl = 	'search?query_type=keyword';
-	$itemsPlaceholder = __('Search %s Only',mh_item_label('plural'));
+	//$itemsPlaceholder = __('Search %s Only',mh_item_label('plural'));
+	$itemsPlaceholder = __('Search Mapped %s Only',mh_item_label('plural'));
 	
 		// Always post the 'items/browse' page by default (though can be overridden).
 	if (!$uri) {
@@ -1283,8 +1315,10 @@ function mh_simple_search($formProperties=array(), $uri = null){
 				if (checked) { //using site-wide search
 					searchFormObject.setAttribute('action', '" . url($sitewideUrl) . "');
 					searchTextObject.setAttribute('name', 'query');
-					searchTextObject.setAttribute('placeholder', 'Search Whole Site');
-					searchRecordTypesObject.setAttribute('disabled', 'enabled');
+					//searchTextObject.setAttribute('placeholder', 'Search Whole Site');
+					searchTextObject.setAttribute('placeholder', 'Search All Content');
+					//searchRecordTypesObject.setAttribute('disabled', 'enabled');
+					searchRecordTypesObject.removeAttribute('disabled');
 }
 				else { //item search
 					searchFormObject.setAttribute('action', '" . url($itemUrl) . "');
@@ -1296,7 +1330,7 @@ function mh_simple_search($formProperties=array(), $uri = null){
 		. "</script>\n";
 	
 	$html .= '<form ' . tag_attributes($formProperties) . '>' . "\n";
-	$html .= '<fieldset style="display:block;float:left;width:4em;
+	$html .= '<fieldset style="display:block;float:left;width:5em;
 			font-size:80%;line-height:normal;padding:2px;">' . "\n\n";
 
 	$html .= get_view()->formLabel('formTypeCheckbox', 'Site-wide search',
@@ -1305,6 +1339,7 @@ function mh_simple_search($formProperties=array(), $uri = null){
 			null, //value
 			array('id'=>'formTypeCheckbox',
 					'checked'=>false,
+			        'style'=>'margin-left:5px;',
 					'onClick'=>'toggleSearch();') //attribs
 		);
 
@@ -1312,7 +1347,9 @@ function mh_simple_search($formProperties=array(), $uri = null){
 
 	//This gets toggled to disabled/enabled
 	$html .= '<fieldset id="record-types" disabled="disabled">' . "\n\n";
-	foreach (['Item','File','SimplePagesPage','Exhibit','ExhibitPage'] as $record_type) {
+	//foreach (['Item','File','SimplePagesPage','Exhibit','ExhibitPage'] as $record_type) {
+	// 4/27/18 change to not search Files
+	foreach (['Item','SimplePagesPage','Exhibit','ExhibitPage'] as $record_type) {
 		$html .= get_view()->formHidden('record_types[]', $record_type);
 	}
 	
@@ -2258,12 +2295,15 @@ function mh_tags(){
 ** Display the official website
 */
 function mh_official_website($item='item'){
+    $retval = null;
 
-	if (element_exists('Item Type Metadata','Official Website')){
-		$websites=metadata($item,array('Item Type Metadata','Official Website'),'all');
-		$retval = '<h3>'.__('Official Website: ').'</h3>';
-		$retval .= join(', ', $websites);
-		
+    if (element_exists('Item Type Metadata','Official Website')){
+        $websites=metadata($item,array('Item Type Metadata','Official Website'),'all');
+        if ($websites) {
+    		$retval = '<h3>'.__('Official Website: ').'</h3>';
+    		$retval .= join(', ', $websites);
+		}
+
 		return $retval;
 	} 
 
@@ -2633,8 +2673,9 @@ function mh_footer_find_us($separator=' '){
 /*
 ** Build a series of social media link for the footer
 */
-function mh_homepage_find_us($separator=' '){
-	if( $services=mh_social_array() ){
+// function mh_homepage_find_us($separator=' '){
+function mh_homepage_find_us($separator=" "){
+        if( $services=mh_social_array() ){
 		return '<span class="find-us-homepage">'.join($separator,$services).'</span>';
 	}
 }

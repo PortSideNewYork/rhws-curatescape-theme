@@ -54,7 +54,7 @@ echo head( array( 'maptype'=>'tour','title' => ''.$label.' | '.$tourTitle, 'cont
 	         ?>
 		         <article class="item-result <?php echo $hasImage ? 'has-image' : null;?>">
 			         <h3><a class="permalink" href="<?php echo url('/') ?>items/show/<?php echo $itemID.'?tour='.tour( 'id' ).'&index='.($i-1).''; ?>">
-			         <?php /* echo '<span class="number">'.$i.'</span>'; */?> 
+			         <?php echo '<span class="number">'.$i.'</span>'; ?> 
 			         <?php echo metadata( $tourItem, array('Dublin Core', 'Title') ); ?>
 			         </a></h3>
 

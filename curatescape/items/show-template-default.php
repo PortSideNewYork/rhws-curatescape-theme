@@ -8,7 +8,6 @@ if (!$location) {
 	$maptype = 'none';
 }
 
-
 echo head(array('item'=>$item, 
 		'maptype'=>$maptype, 
 		'bodyid'=>'items', 
@@ -19,7 +18,7 @@ echo head(array('item'=>$item,
 			)
 		); ?>
 
-<?php mh_map_actions($item,null);?>
+<?php  mh_map_actions($item,null); /* MAYBE */ ?>
 
 <div id="content">
 
@@ -38,6 +37,9 @@ echo head(array('item'=>$item,
 	</div>	
 	
 	<?php echo mh_the_byline($item,true,true); echo item_is_private($item);?>
+
+	<?php echo function_exists('tour_nav') ? '<nav class="tour-nav-container top">'.tour_nav(null,mh_tour_label()).'</nav>' : null; ?>
+
 	
 	</header>
 
@@ -60,17 +62,27 @@ echo head(array('item'=>$item,
 
 		
 
-		<div id="item-media">
-			<section class="media">
+	<div id="item-media">
+		<section class="media">
 				
-				<?php mh_item_images($item);?>	
+			<?php mh_item_images($item);?>	
 				
-				<?php mh_audio_files($item);?>		
+			<?php mh_audio_files($item);?>		
 						
-				<?php mh_video_files($item);?>
+			<?php mh_video_files($item);?>
 						
-			</section>
-		</div>
+		</section>
+	</div>
+	
+    <?php /* MAYBE if(isset($maptype) && $maptype != 'none'): 
+    // Has location 
+    ?>
+	<h2 class="item-map">Map</h2>
+	<figure id="hero">
+		<?php echo mh_which_content($maptype,$item); ?>	
+	</figure>
+	<?php mh_map_actions($item,null); ?>
+    <?php endif; */ ?>
 
 	
 		<div id="item-metadata" class="item instapaper_ignore">
@@ -102,12 +114,21 @@ echo head(array('item'=>$item,
 				</div> 
 				-->	
 				
+     <?php 
+     	/*fire_plugin_hook('public_items_show', array('view' => $this, 'item' => $item)); */
+		//Only show ItemRelations when there are any for this item
+     	$subjectRelations = ItemRelationsPlugin::prepareSubjectRelations($item);
+    	$objectRelations = ItemRelationsPlugin::prepareObjectRelations($item);
+     
+ 		if ($subjectRelations || $objectRelations) {    
+     		echo get_specific_plugin_hook_output('ItemRelations', 'public_items_show', array('view' => $this, 'item' => $item));
+ 		}
+     ?>
+								
+				
+				
 				<?php echo function_exists('tours_for_item') ? tours_for_item($item->id) : null; ?>
 					
-				<div id="sources">  	
-				<?php mh_sources(); ?>
-				</div>	
-
 				<div id="rights">  	
 				<?php mh_rights(); ?>
 				</div>	
@@ -120,23 +141,19 @@ echo head(array('item'=>$item,
 				<?php mh_tags();?>	
 				</div>
 				
-				<?php echo function_exists('tour_nav') ? tour_nav(null,mh_tour_label()) : null; ?>		
+				<div id="sources">  	
+				<?php mh_sources(); ?>
+				</div>	
 
 				<div class="item-related-links">
 				<?php mh_related_links();?>
 				</div>
 
-     <?php 
-     	/*fire_plugin_hook('public_items_show', array('view' => $this, 'item' => $item)); */
-		//Only show ItemRelations when there are any for this item
-     	$subjectRelations = ItemRelationsPlugin::prepareSubjectRelations($item);
-    	$objectRelations = ItemRelationsPlugin::prepareObjectRelations($item);
-     
- 		if ($subjectRelations || $objectRelations) {    
-     		echo get_specific_plugin_hook_output('ItemRelations', 'public_items_show', array('view' => $this, 'item' => $item));
- 		}
-     ?>
-								
+				<?php /*echo function_exists('tour_nav') ? tour_nav(null,mh_tour_label()) : null; */?>
+				
+				<?php echo function_exists('tour_nav') ? '<nav class="tour-nav-container bottom">'.tour_nav(null,mh_tour_label()).'</nav>' : null; ?>
+				
+
 				<div class="date-stamp">
 				<?php echo mh_post_date(); ?>				
 				</div>
@@ -161,7 +178,7 @@ echo head(array('item'=>$item,
 </article>
 
 </div> <!-- end content -->
-
+<!-- 
 <script>
 	
 	if(jQuery('.tour-nav').length > 0){
@@ -175,5 +192,6 @@ echo head(array('item'=>$item,
 	}
 	
 </script>
-
+ -->
+ 
 <?php echo foot(); ?>
