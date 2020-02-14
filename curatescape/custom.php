@@ -827,10 +827,10 @@ function mh_display_map($type=null,$item=null,$tour=null){
 							var mtDate = new Date(mtvinfo['TIMESTAMP']);
 
 							var mtMoreInfo = "";
-							if (mtvinfo['MMSI'] != 0) {
+							if (mtvinfo['SHIP_ID'] != 0) {
 								mtMoreInfo = 
-			            		       "<span id='mtlink'><a target='_blank' href='http://www.marinetraffic.com/en/ais/details/ships/mmsi:"
-			            		       + mtvinfo['MMSI'] + "'>see more about " + mtShipName + "</a></span>";
+			            		       "<span id='mtlink'><a target='_blank' href='http://www.marinetraffic.com/en/ais/details/ships/shipid:"
+			            		       + mtvinfo['SHIP_ID'] + "'>see more about " + mtShipName + "</a></span>";
 							}
 
 							//Make sure these appear under other markers using zIndexOffset
@@ -1044,9 +1044,10 @@ function mh_display_map($type=null,$item=null,$tour=null){
 					        }
 					        else {
 						        //1. add groups to map, 2. add control to overlays
-						        //Just add items with no collection to map by default
+						        //Add groups that are on by default: no collection, Highlights, businesses
 					        	mapSubGroups['none'].addTo(map);
 						        mapSubGroups['Highlights'].addTo(map);
+						        mapSubGroups['Red Hook Retail Businesses'].addTo(map);
 					        }
 						}
 				        
@@ -1069,7 +1070,7 @@ function mh_display_map($type=null,$item=null,$tour=null){
 			        }
 			        
 			        
-				}else{ // single items
+				} else { // single items
 			        var address = data.address ? data.address : data.latitude+','+data.longitude;
 			        var accessInfo=(data.accessinfo === true) ? '<a class="access-anchor" href="#access-info"><span class="icon-exclamation-circle" aria-hidden="true"></span> Access Information</a>' : '';
 
