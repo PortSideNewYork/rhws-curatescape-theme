@@ -506,7 +506,7 @@ function mh_display_map($type=null,$item=null,$tour=null){
 			// http://69.169.84.210:8080/geoserver/wms
 			// was rhws:noaa_rnc_12334
 
-           var noaaMap = L.tileLayer.wms("https://redhookwaterstories.org/geoserver/wms", {
+           var noaaMap1 = L.tileLayer.wms("https://redhookwaterstories.org/geoserver/wms", {
     			layers: 'rhws:12334pyramid3',
         		format: 'image/png',
             	transparent: true,
@@ -515,7 +515,19 @@ function mh_display_map($type=null,$item=null,$tour=null){
 		    	maxZoom: 21
 		    });
 
-            noaaMap.addTo(map);
+            noaaMap1.addTo(map);
+
+            var noaaMap2 = L.tileLayer.wms("https://redhookwaterstories.org/geoserver/wms", {
+    			layers: 'rhws:12335pyramid1',
+        		format: 'image/png',
+            	transparent: true,
+            	zIndex: 6,
+		    	maxNativeZoom: 18,
+		    	maxZoom: 21
+		    });
+
+            noaaMap2.addTo(map);
+
             //---end adding NOAA map------
 
             var baseLayers = {
