@@ -852,10 +852,15 @@ function mh_display_map($type=null,$item=null,$tour=null){
 							var mtDate = new Date(mtvinfo['TIMESTAMP']);
 
 							var mtMoreInfo = "";
-							if (mtvinfo['SHIP_ID'] != 0) {
+							if (mtvinfo.hasOwnProperty('SHIP_ID') && mtvinfo['SHIP_ID'] != 0) {
 								mtMoreInfo = 
 			            		       "<span id='mtlink'><a target='_blank' href='http://www.marinetraffic.com/en/ais/details/ships/shipid:"
 			            		       + mtvinfo['SHIP_ID'] + "'>see more about " + mtShipName + "</a></span>";
+							}
+							else if (mtvinfo.hasOwnProperty('MMSI')) {
+								mtMoreInfo = 
+			            		       "<span id='mtlink'><a target='_blank' href='http://www.marinetraffic.com/en/ais/details/ships/mmsi:"
+			            		       + mtvinfo['MMSI'] + "'>see more about " + mtShipName + "</a></span>";
 							}
 
 							//Make sure these appear under other markers using zIndexOffset
