@@ -505,8 +505,8 @@ function mh_display_map($type=null,$item=null,$tour=null){
 			//-----Add custom NOAA chart map layer-----
 			// http://69.169.84.210:8080/geoserver/wms
 			// was rhws:noaa_rnc_12334
-
-           var noaaMap1 = L.tileLayer.wms("https://redhookwaterstories.org/geoserver/wms", {
+/*
+           var noaaMap = L.tileLayer.wms("https://redhookwaterstories.org/geoserver/wms", {
     			layers: 'rhws:12334pyramid3',
         		format: 'image/png',
             	transparent: true,
@@ -515,19 +515,32 @@ function mh_display_map($type=null,$item=null,$tour=null){
 		    	maxZoom: 21
 		    });
 
+            noaaMap.addTo(map);
+	    */
+
+
+           var noaaMap1 = L.tileLayer.wms("https://redhookwaterstories.org/geoserver/wms", {
+	       		  								   layers: 'rhws:12334pyramid3',
+														format: 'image/png',
+																transparent: true,
+																             zIndex: 5,
+																				maxNativeZoom: 18,
+																							maxZoom: 21
+																									    });
+
             noaaMap1.addTo(map);
 
             var noaaMap2 = L.tileLayer.wms("https://redhookwaterstories.org/geoserver/wms", {
-    			layers: 'rhws:12335pyramid1',
-        		format: 'image/png',
-            	transparent: true,
-            	zIndex: 6,
-		    	maxNativeZoom: 18,
-		    	maxZoom: 21
-		    });
+	        	   								    layers: 'rhws:12335pyramid1',
+														format: 'image/png',
+																transparent: true,
+																             zIndex: 6,
+																				maxNativeZoom: 18,
+																							maxZoom: 21
+																									    });
 
             noaaMap2.addTo(map);
-
+	    
             //---end adding NOAA map------
 
             var baseLayers = {
@@ -1056,10 +1069,9 @@ function mh_display_map($type=null,$item=null,$tour=null){
 					        }
 					        else {
 						        //1. add groups to map, 2. add control to overlays
-						        //Add groups that are on by default: no collection, Highlights, businesses
+						        //Just add items with no collection to map by default
 					        	mapSubGroups['none'].addTo(map);
 						        mapSubGroups['Highlights'].addTo(map);
-						        mapSubGroups['Red Hook Retail Businesses'].addTo(map);
 					        }
 						}
 				        
@@ -1082,7 +1094,7 @@ function mh_display_map($type=null,$item=null,$tour=null){
 			        }
 			        
 			        
-				} else { // single items
+				}else{ // single items
 			        var address = data.address ? data.address : data.latitude+','+data.longitude;
 			        var accessInfo=(data.accessinfo === true) ? '<a class="access-anchor" href="#access-info"><span class="icon-exclamation-circle" aria-hidden="true"></span> Access Information</a>' : '';
 
