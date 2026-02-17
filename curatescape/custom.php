@@ -943,7 +943,6 @@ function mh_display_map($type=null,$item=null,$tour=null){
 					//mta_bus_lg.addTo(map);
 					mapControl.addOverlay(mta_bus_lg, 'MTA Bus Stations');
 					
-
 					routesData.forEach(function(routesDataUrl) {
 				        $.getJSON(routesDataUrl, function(route) {
 
@@ -964,7 +963,7 @@ function mh_display_map($type=null,$item=null,$tour=null){
 
 				        	      var myicon = L.divIcon(
 				        	           {html: "<span class='my-div-icon-name' style='font-size: 80%;'>"
-				        	           + "<img src='http://twu106.org/sites/twu106.prometheuslabor.com/files/images/mta_nyc_logo_svg1.png' height='18'/>"
+				        	           + "<img src='<?php echo img('MTA_NYC_logo.svg')?>' height='18'/>"
 				        	           //+ "<br/>" + stopRoutes
 				        	           + "</span>"
 				        	           + "<span class='my-div-icon-shape' style='transform: rotate(" + direction_chars[businfo['direction']] + "deg) scale(0.75,1.25) ;'>&#x25b2;"
