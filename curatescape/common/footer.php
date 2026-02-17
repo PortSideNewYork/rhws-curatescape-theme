@@ -32,9 +32,9 @@
 		<span id="powered-by"><?php echo __('Powered by <a href="http://omeka.org/" target="_blank">Omeka</a> + <a href="http://curatescape.org" target="_blank">Curatescape</a>');?></span>
         <span id="sponsored-by">
           <span style="float:left;width:50%;">
-          Site hosting provided by 
-          <a href="http://www.siliconservers.com" target="_blank">
-            <img height="50" src="<?php echo img('siliconservers.png'); ?>" />
+          Powered by 
+          <a href="http://www.interserver.net" target="_blank">
+            <img height="40" src="<?php echo img('interserver.png'); ?>" />
           </a>
           </span>
           <span style="width:50%;">
