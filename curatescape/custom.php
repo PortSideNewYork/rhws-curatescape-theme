@@ -3039,6 +3039,7 @@ function mh_license(){
 /*
 ** Google Analytics
 */
+/* Old one:
 function mh_google_analytics($webPropertyID=null){
 	$webPropertyID= get_theme_option('google_analytics');
 	if ($webPropertyID!=null){
@@ -3056,6 +3057,23 @@ function mh_google_analytics($webPropertyID=null){
 
 	</script>";
 	}
+}
+*/
+
+/* New 2/21/26 for GA4 */
+function mh_google_analytics($webPropertyID=null){
+         $webPropertyID=get_theme_option('google_analytics');
+          if ($webPropertyID!=null){
+                   echo "<!-- Google tag (gtag.js) -->
+<script async src=\"https://www.googletagmanager.com/gtag/js?id=" . $webPropertyID . "\"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', '" . $webPropertyID . "');
+</script>";
+       }
 }
 
 /*
