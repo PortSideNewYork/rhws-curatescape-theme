@@ -98,12 +98,11 @@ echo head_js(false); // <-- No to Omeka default scripts
 <?php echo js_tag('ie-polyfills.min');?>
 <![endif]-->
 
-
 <!-- Plugin Stuff -->
 <?php echo fire_plugin_hook('public_head', array('view'=>$this)); ?>
 
 </head>
-<!-- Google Analytics moved 2/21/26 -->
+<!-- Google Analytics -->
 <?php echo mh_google_analytics();?>
 
 <body<?php echo isset($bodyid) ? ' id="'.$bodyid.'"' : ''; ?><?php echo isset($bodyclass) ? ' class="'.$bodyclass.'"' : ''; ?>> 
