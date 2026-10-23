@@ -390,6 +390,8 @@ function mh_display_map($type=null,$item=null,$tour=null){
     $zoom=(get_option('geolocation_default_zoom_level')) ? get_option('geolocation_default_zoom_level') : 12;
     $color=get_theme_option('marker_color') ? get_theme_option('marker_color') : '#333';
     $featured_color=get_theme_option('featured_marker_color') ? get_theme_option('featured_marker_color') : $color;
+    $carto_basemaps_api_key = get_theme_option('carto_basemaps_api_key');
+    $maki_markers_access_token = get_theme_option('maki_markers_access_token');
 
     switch($type){
 
@@ -464,16 +466,16 @@ function mh_display_map($type=null,$item=null,$tour=null){
 
             var terrain = L.tileLayer('http://tile.stamen.com/terrain/{z}/{x}/{y}.jpg', {
                 attribution: '<a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> | Map Tiles by <a href="http://stamen.com/">Stamen Design</a>'
-            });        
+            });
             var toner = L.tileLayer('http://tile.stamen.com/toner/{z}/{x}/{y}{retina}.png', {
                 attribution: '<a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> | Map Tiles by <a href="http://stamen.com/">Stamen Design</a>',
                 retina: (L.Browser.retina) ? '@2x' : '',
-            });        
+            });
             var pioneer = L.tileLayer('http://{s}.tile.thunderforest.com/pioneer/{z}/{x}/{y}{retina}.png', {
                 attribution: '<a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> | Map Tiles by <a href="http://www.thunderforest.com/">Thunderforest</a>',
                 retina: (L.Browser.retina) ? '@2x' : '',
             });    
-            var carto = L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{retina}.png', {
+            var carto = L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{retina}.png?key=<?php echo $carto_basemaps_api_key; ?>', {
                 attribution: '<a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> | <a href="https://cartodb.com/attributions">CartoDB</a>',
                 retina: (L.Browser.retina) ? '@2x' : '',
                 maxNativeZoom: 18,
@@ -619,7 +621,7 @@ function mh_display_map($type=null,$item=null,$tour=null){
                         icon: markerInner, 
                         color: color, 
                         size: myMarkerSize,
-                        accessToken: "pk.eyJ1IjoiZWJlbGxlbXBpcmUiLCJhIjoiY2ludWdtOHprMTF3N3VnbHlzODYyNzh5cSJ9.w3AyewoHl8HpjEaOel52Eg"
+                        accessToken: "<?php echo $maki_markers_access_token; ?>"
                         });    
                 }
                 if(typeof(data.items)!="undefined"){ // tours and other multi-item maps
@@ -986,17 +988,40 @@ function mh_display_map($type=null,$item=null,$tour=null){
                                        }
                                   );
 
+				  // 1. Create a safe container element
+				  var popupContainer = document.createElement('div');
+				  popupContainer.className = 'mta-bus-popup';
+
+				  // 2. Safely add text content to prevent XSS
+				  var textNode = document.createTextNode(stopRoutes + " bus stop headed " + businfo['direction']);
+				  popupContainer.appendChild(textNode);
+				  popupContainer.appendChild(document.createElement('br'));
+
+				  // 3. Create the anchor tag securely
+				  var link = document.createElement('a');
+				  link.target = '_blank';
+				  // Crucial for security and fixing flags:
+				  link.rel = 'noopener noreferrer'; 
+				  link.href = 'https://bustime.mta.info/m/?q=' + encodeURIComponent(businfo['code']);
+				  link.textContent = 'See MTA Bus Time\u00A9 for this stop';
+
+				  popupContainer.appendChild(link);
+
                                   var mtmark = L.marker([businfo['lat'], businfo['lon']],
                                       {title: businfo['name'],
                                       icon: myicon
                                       }
-                                  ).bindPopup(
+                                  ).bindPopup(popupContainer);
+				  
+/**
+				  bindPopup(
                                               stopRoutes + " bus stop headed " + businfo['direction']
                                               + "<br/>" + "<a target='_blank' href='https://bustime.mta.info/m/?q=" + businfo['code'] + "'>See MTA Bus Time&#xa9; for this stop</a>",
                                               {className:"mta-bus-popup"}
                                   );
+*/
 
-                                 stopAdded[businfo['id']] = 'y';
+				 stopAdded[businfo['id']] = 'y';
                                  mtmark.addTo(mta_bus_lg);
                              }
                                                        
